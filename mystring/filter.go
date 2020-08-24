@@ -18,5 +18,5 @@ func FilterSql(sql string) string {
 	sql = strings.ReplaceAll(sql, "<", "")
 	sql = strings.ReplaceAll(sql, "%", "")
 	sql = strings.ReplaceAll(sql, "\t", "")
-	return strings.TrimSpace(sql)
+	return sql
 }
