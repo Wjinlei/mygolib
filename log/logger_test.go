@@ -4,8 +4,9 @@ import "testing"
 
 func TestNew(t *testing.T) {
 	logger, err := New(&Option{
-		LogLevel: DebugLevel,
-		LogType:  "json",
+		LogLevel:     DebugLevel,
+		LogType:      "json",
+		ReportCaller: true,
 	})
 	if err != nil {
 		t.Error(err)

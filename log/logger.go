@@ -6,8 +6,9 @@ import (
 
 // 选项定义
 type Option struct {
-	LogLevel Level
-	LogType  string // json, text
+	LogLevel     Level
+	LogType      string // 日志类型: json, text
+	ReportCaller bool   // 将调用方法添加为字段,这会带来开销
 }
 
 type Logger struct {
@@ -31,7 +32,7 @@ const (
 
 // 默认选项
 const (
-	DefaultDateFormat  = "%Y-%m-%d"            // 默认日期格式
+	DefaultDateFormat  = "%Y%m%d"              // 默认日期格式
 	DefaultTimeFormat  = "2006-01-02 15:04:05" // 默认时间格式
 	DefaultDataKey     = "data"                // 附加字段都会作为该字段的嵌入字段
 	DefaultPrettyPrint = true                  // 默认美化输出
@@ -49,8 +50,6 @@ func GetLogger() *Logger {
 // 产生新的logger
 func New(option *Option) (*Logger, error) {
 	logrusLogger := logrus.New()
-	logrusLogger.Level = logrus.Level(option.LogLevel)
-
 	// 设置日志格式
 	switch option.LogType {
 	case "json":
@@ -64,6 +63,8 @@ func New(option *Option) (*Logger, error) {
 			TimestampFormat: DefaultTimeFormat,
 		})
 	}
+	logrusLogger.Level = logrus.Level(option.LogLevel)
+	logrusLogger.SetReportCaller(option.ReportCaller)
 	logger = &Logger{
 		logger: logrusLogger,
 	}
