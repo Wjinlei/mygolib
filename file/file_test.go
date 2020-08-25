@@ -15,18 +15,6 @@ func TestReadFile(t *testing.T) {
 	}
 }
 
-func TestFileExists(t *testing.T) {
-	if ok := FileExists("./testfile1.txt"); !ok {
-		t.Error("TestFileExists failed")
-	}
-}
-
-func TestFileNotExists(t *testing.T) {
-	if ok := FileNotExists("./testfile1.txt"); ok {
-		t.Error("TestFileNotExists failed")
-	}
-}
-
 func TestMoveFile(t *testing.T) {
 	if err := MoveFile("./testfile1.txt", "./testfile1.txt.bak"); err != nil {
 		t.Error(err)

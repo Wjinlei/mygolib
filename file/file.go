@@ -30,26 +30,6 @@ func ReadFile(filePath string) (string, error) {
 	return string(content), nil
 }
 
-// 判断文件是否存在
-func FileExists(filePath string) bool {
-	_, err := os.Stat(filePath)
-	ok := os.IsNotExist(err)
-	if ok {
-		return false
-	}
-	return true
-}
-
-// 判断文件是否不存在
-func FileNotExists(filePath string) bool {
-	_, err := os.Stat(filePath)
-	ok := os.IsNotExist(err)
-	if ok {
-		return true
-	}
-	return false
-}
-
 // 移动或重命名文件
 func MoveFile(oldpath string, newpath string) error {
 	if err := os.Rename(oldpath, newpath); err != nil {
