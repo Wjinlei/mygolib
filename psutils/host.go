@@ -33,3 +33,21 @@ func GetUptime() (uint64, error) {
 	}
 	return v, nil
 }
+
+// 获取系统用户列表
+func GetUsers() ([]host.UserStat, error) {
+	v, err := host.Users()
+	if err != nil {
+		return nil, err
+	}
+	empty := host.UserStat{}
+	if len(v) == 0 {
+		return nil, errors.New("Users is empty")
+	}
+	for _, u := range v {
+		if u == empty {
+			return nil, errors.New(fmt.Sprintf("Could not User: %v", v))
+		}
+	}
+	return v, nil
+}

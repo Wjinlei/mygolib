@@ -20,3 +20,11 @@ func TestGetUptime(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestGetUsers(t *testing.T) {
+	v, err := GetUsers()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}
