@@ -3,6 +3,7 @@ package psutils
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/shirou/gopsutil/mem"
 )
@@ -26,7 +27,7 @@ func GetMemory() (*MemoryStat, error) {
 	}
 	empty := &mem.VirtualMemoryStat{}
 	if v == empty {
-		return nil, errors.New("VirtualMemoryStat{} is empty")
+		return nil, errors.New(fmt.Sprintf("error %v", v))
 	}
 	return &MemoryStat{
 		Total:       v.Total,
