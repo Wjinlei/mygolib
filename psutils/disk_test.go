@@ -12,3 +12,11 @@ func TestGetDiskUsage(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestGetDiskPart(t *testing.T) {
+	v, err := GetDiskPart()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}

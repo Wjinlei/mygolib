@@ -17,3 +17,21 @@ func GetDiskUsage(path string) (*disk.UsageStat, error) {
 	}
 	return v, nil
 }
+
+// 获取磁盘分区
+func GetDiskPart() ([]disk.PartitionStat, error) {
+	ret, err := disk.Partitions(false)
+	if err != nil {
+		return nil, err
+	}
+	if len(ret) == 0 {
+		return nil, errors.New("Not found partitions")
+	}
+	empty := disk.PartitionStat{}
+	for _, disk := range ret {
+		if disk == empty {
+			return nil, errors.New(fmt.Sprintf("Could not get device info %v", disk))
+		}
+	}
+	return ret, nil
+}
