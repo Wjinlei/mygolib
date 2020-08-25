@@ -63,3 +63,15 @@ func GetKernelVersion() (string, error) {
 	}
 	return version, nil
 }
+
+// 获取平台信息
+func GetPlatformInfo() (platform string, family string, version string, err error) {
+	platform, family, version, err = host.PlatformInformation()
+	if err != nil {
+		return "", "", "", err
+	}
+	if platform == "" {
+		return "", "", "", errors.New(fmt.Sprintf("PlatformInformation() returns empty: %s", platform))
+	}
+	return platform, family, version, nil
+}

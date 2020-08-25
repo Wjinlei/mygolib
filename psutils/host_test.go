@@ -36,3 +36,11 @@ func TestKernelVersion(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestGetPlatformInfo(t *testing.T) {
+	platform, family, version, err := GetPlatformInfo()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("platform: %s, family: %s, version: %s\n", platform, family, version)
+}
