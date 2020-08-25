@@ -38,3 +38,15 @@ func GetCPUPercent() (float64, error) {
 	}
 	return result, nil
 }
+
+// 获取CPU个数, logical = true 则统计逻辑核心(线程)
+func GetCPUCount(logical bool) (int, error) {
+	v, err := cpu.Counts(logical)
+	if err != nil {
+		return -1, err
+	}
+	if v == 0 {
+		return -1, errors.New(fmt.Sprintf("could not get CPU counts: %v", v))
+	}
+	return v, nil
+}

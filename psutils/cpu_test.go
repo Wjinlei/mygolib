@@ -13,8 +13,16 @@ func TestGetCPUInfo(t *testing.T) {
 	fmt.Println(v)
 }
 
-func TestCPUPercent(t *testing.T) {
+func TestGetCPUPercent(t *testing.T) {
 	v, err := GetCPUPercent()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}
+
+func TestGetCPUCount(t *testing.T) {
+	v, err := GetCPUCount(false)
 	if err != nil {
 		t.Error(err)
 	}
