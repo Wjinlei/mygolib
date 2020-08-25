@@ -2,6 +2,8 @@ package psutils
 
 import (
 	"encoding/json"
+	"errors"
+
 	"github.com/shirou/gopsutil/mem"
 )
 
@@ -21,6 +23,10 @@ func GetSwap() (*SwapStat, error) {
 	v, err := mem.SwapMemory()
 	if err != nil {
 		return nil, err
+	}
+	empty := &mem.SwapMemoryStat{}
+	if v == empty {
+		return nil, errors.New("SwapMemoryStat{} is empty")
 	}
 	return &SwapStat{
 		Total:       v.Total,
