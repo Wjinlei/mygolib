@@ -1,6 +1,8 @@
 package file
 
-import "os"
+import (
+	"os"
+)
 
 // 判断是否存在
 func Exists(path string) bool {

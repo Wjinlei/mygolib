@@ -1,14 +1,22 @@
 package log
 
 import (
+	"fmt"
+	"path/filepath"
+	"time"
+
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	logrus "github.com/sirupsen/logrus"
 )
 
 // 选项定义
 type Option struct {
-	LogLevel     Level
-	LogType      string // 日志类型: json, text
-	ReportCaller bool   // 将调用方法添加为字段,这会带来开销
+	LogPath      string        // 日志路径
+	LogLevel     Level         // 日志级别
+	LogType      string        // 日志类型: json, text
+	MaxAge       time.Duration // 日志文件清理前的最长保存时间
+	RotationTime time.Duration // 日志文件多长时间清理(切割)一次
+	ReportCaller bool          // 将调用方法添加为字段,这会带来开销
 }
 
 type Logger struct {
@@ -32,7 +40,7 @@ const (
 
 // 默认选项
 const (
-	DefaultDateFormat  = "%Y%m%d"              // 默认日期格式
+	DefaultDateFormat  = "%Y%m%d%H%M"          // 默认日期格式
 	DefaultTimeFormat  = "2006-01-02 15:04:05" // 默认时间格式
 	DefaultDataKey     = "data"                // 附加字段都会作为该字段的嵌入字段
 	DefaultPrettyPrint = true                  // 默认美化输出
@@ -65,6 +73,21 @@ func New(option *Option) (*Logger, error) {
 	}
 	logrusLogger.Level = logrus.Level(option.LogLevel)
 	logrusLogger.SetReportCaller(option.ReportCaller)
+	// 将路径转换为绝对路径
+	absLogPath, err := filepath.Abs(option.LogPath)
+	if err != nil {
+		return nil, err
+	}
+	rotator, err := rotatelogs.New(
+		fmt.Sprintf("%s-%s", absLogPath, DefaultDateFormat),
+		rotatelogs.WithLinkName(absLogPath),
+		rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
+		rotatelogs.WithRotationTime(option.RotationTime), // 多久滚动一次
+	)
+	if err != nil {
+		return nil, err
+	}
+	logrusLogger.SetOutput(rotator)
 	logger = &Logger{
 		logger: logrusLogger,
 	}
