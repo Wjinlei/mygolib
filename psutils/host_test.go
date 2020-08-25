@@ -28,3 +28,11 @@ func TestGetUsers(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestKernelVersion(t *testing.T) {
+	v, err := GetKernelVersion()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}

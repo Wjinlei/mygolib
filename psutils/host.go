@@ -51,3 +51,15 @@ func GetUsers() ([]host.UserStat, error) {
 	}
 	return v, nil
 }
+
+// 获取系统内核版本
+func GetKernelVersion() (string, error) {
+	version, err := host.KernelVersion()
+	if err != nil {
+		return "", err
+	}
+	if version == "" {
+		return "", errors.New(fmt.Sprintf("KernelVersion() returns empty: %s", version))
+	}
+	return version, nil
+}
