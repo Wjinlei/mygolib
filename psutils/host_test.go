@@ -44,3 +44,11 @@ func TestGetPlatformInfo(t *testing.T) {
 	}
 	fmt.Printf("platform: %s, family: %s, version: %s\n", platform, family, version)
 }
+
+func TestGetHostId(t *testing.T) {
+	v, err := GetHostId()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}

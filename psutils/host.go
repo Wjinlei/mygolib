@@ -75,3 +75,15 @@ func GetPlatformInfo() (platform string, family string, version string, err erro
 	}
 	return platform, family, version, nil
 }
+
+// 获取主机ID
+func GetHostId() (string, error) {
+	v, err := GetHostInfo()
+	if err != nil {
+		return "", err
+	}
+	if v.HostID == "" {
+		return "", errors.New("Host id is empty")
+	}
+	return v.HostID, nil
+}
