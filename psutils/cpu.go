@@ -43,10 +43,10 @@ func GetCPUPercent() (float64, error) {
 func GetCPUCount(logical bool) (int, error) {
 	v, err := cpu.Counts(logical)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	if v == 0 {
-		return -1, errors.New(fmt.Sprintf("could not get CPU counts: %v", v))
+		return 0, errors.New(fmt.Sprintf("could not get CPU counts: %v", v))
 	}
 	return v, nil
 }
