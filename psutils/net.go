@@ -6,6 +6,7 @@ import (
 	"github.com/shirou/gopsutil/net"
 )
 
+// 获取所有接口总IO
 func GetIOCountersAll() ([]net.IOCountersStat, error) {
 	v, err := net.IOCounters(false)
 	if err != nil {
@@ -27,6 +28,23 @@ func GetIOCountersAll() ([]net.IOCountersStat, error) {
 	}
 	if v[0].PacketsRecv != pr {
 		return nil, errors.New(fmt.Sprintf("invalid sum value: %v, %v", v[0].PacketsRecv, pr))
+	}
+	return v, nil
+}
+
+// 获取每个接口的IO
+func GetIOCounters() ([]net.IOCountersStat, error) {
+	v, err := net.IOCounters(true)
+	if err != nil {
+		return nil, err
+	}
+	if len(v) == 0 {
+		return nil, errors.New(fmt.Sprintf("Could not get NetIOCounters: %v", v))
+	}
+	for _, vv := range v {
+		if vv.Name == "" {
+			return nil, errors.New(fmt.Sprintf("Invalid NetIOCounters: %v", vv))
+		}
 	}
 	return v, nil
 }

@@ -12,3 +12,11 @@ func TestGetIOCountersAll(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestGetIOCounters(t *testing.T) {
+	v, err := GetIOCounters()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}
