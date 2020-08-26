@@ -1,6 +1,9 @@
 package public
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestWriteFile(t *testing.T) {
 	if err := WriteFile("./testfile1.txt", "TestWriteFile"); err != nil {
@@ -12,6 +15,26 @@ func TestReadFile(t *testing.T) {
 	_, err := ReadFile("./testfile1.txt")
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestReadLines(t *testing.T) {
+	lines, err := ReadLines("./.sayHello.sh")
+	if err != nil {
+		t.Error(err)
+	}
+	if !strings.Contains(lines[1], "echo \"Hello\"") {
+		t.Error("could not read correctly")
+	}
+}
+
+func TestReadLinesOffsetN(t *testing.T) {
+	lines, err := ReadLinesOffsetN("./.sayHello.sh", 0, 2)
+	if err != nil {
+		t.Error(err)
+	}
+	if !strings.Contains(lines[1], "echo \"Hello\"") {
+		t.Error("could not read correctly")
 	}
 }
 
