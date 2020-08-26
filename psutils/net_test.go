@@ -36,3 +36,11 @@ func TestGetConnections(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestGetOutboundIP(t *testing.T) {
+	v, err := GetOutboundIP()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}

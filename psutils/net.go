@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/shirou/gopsutil/net"
+	gonet "net"
 )
 
 // 获取所有接口总IO
@@ -81,4 +82,15 @@ func GetConnections() ([]net.ConnectionStat, error) {
 		}
 	}
 	return v, nil
+}
+
+// 获取出口IP,注意不是外网IP,而是数据包流出的接口的IP地址
+func GetOutboundIP() (string, error) {
+	conn, err := gonet.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*gonet.UDPAddr)
+	return localAddr.IP.String(), nil
 }
