@@ -6,15 +6,11 @@ import (
 )
 
 // 判断文件是否存在
-func Exists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil || os.IsExist(err)
-}
-
-// 判断文件是否不存在
-func NotExists(path string) bool {
-	_, err := os.Stat(path)
-	return err != nil || os.IsNotExist(err)
+func PathExists(path string) bool {
+	if _, err := os.Stat(path); err == nil {
+		return true
+	}
+	return false
 }
 
 // 判断元素是否存在于Slice中, String类型
