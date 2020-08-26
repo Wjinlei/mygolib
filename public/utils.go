@@ -2,6 +2,7 @@ package public
 
 import (
 	"os"
+	"strings"
 )
 
 // 判断文件是否存在
@@ -19,7 +20,7 @@ func NotExists(path string) bool {
 // 判断元素是否存在于Slice中, String类型
 func ContainsString(s []string, e string) bool {
 	for _, a := range s {
-		if a == e {
+		if strings.TrimSpace(a) == e {
 			return true
 		}
 	}
