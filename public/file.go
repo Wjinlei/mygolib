@@ -19,13 +19,8 @@ func WriteFile(filepath string, content string) error {
 }
 
 // 读取文件内容
-func ReadFile(filePath string) (string, error) {
-	file, err := os.OpenFile(filePath, os.O_RDONLY, 0644)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-	content, err := ioutil.ReadAll(file)
+func ReadFile(filename string) (string, error) {
+	content, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}
