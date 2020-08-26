@@ -127,3 +127,13 @@ func ParseFloat64(val string) float64 {
 	vv, _ := strconv.ParseFloat(val, 64)
 	return vv
 }
+
+// Remove quotes of the source string(删除源字符的引号)
+func trimQuotes(s string) string {
+	if len(s) >= 2 {
+		if s[0] == '"' && s[len(s)-1] == '"' {
+			return s[1 : len(s)-1]
+		}
+	}
+	return s
+}

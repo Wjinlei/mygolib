@@ -3,6 +3,7 @@ package public
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -39,4 +40,22 @@ func ExecScript(params ...string) (string, error) {
 		return fmt.Sprintf("[DEBUG]: %s [ERROR]: %s [INFO]: %s\n", params, err, errOut), err
 	}
 	return strings.TrimSpace(stdout.String()), nil
+}
+
+// 执行sysctl
+func DoSysctrl(mib string) ([]string, error) {
+	sysctl, err := exec.LookPath("sysctl")
+	if err != nil {
+		return []string{}, err
+	}
+	cmd := exec.Command(sysctl, "-n", mib)
+	cmd.Env = getSysctrlEnv(os.Environ())
+	out, err := cmd.Output()
+	if err != nil {
+		return []string{}, err
+	}
+	v := strings.Replace(string(out), "{ ", "", 1)
+	v = strings.Replace(string(v), " }", "", 1)
+	values := strings.Fields(string(v))
+	return values, nil
 }

@@ -1,4 +1,4 @@
-package psutils
+package public
 
 import (
 	"fmt"

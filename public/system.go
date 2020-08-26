@@ -1,9 +1,7 @@
-package psutils
+package public
 
 import (
-	"mylib/public"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -67,27 +65,9 @@ func getSysctrlEnv(env []string) []string {
 	return env
 }
 
-// 执行sysctl
-func DoSysctrl(mib string) ([]string, error) {
-	sysctl, err := exec.LookPath("sysctl")
-	if err != nil {
-		return []string{}, err
-	}
-	cmd := exec.Command(sysctl, "-n", mib)
-	cmd.Env = getSysctrlEnv(os.Environ())
-	out, err := cmd.Output()
-	if err != nil {
-		return []string{}, err
-	}
-	v := strings.Replace(string(out), "{ ", "", 1)
-	v = strings.Replace(string(v), " }", "", 1)
-	values := strings.Fields(string(v))
-	return values, nil
-}
-
 // 获取系统发行版本
 func GetOSRelease() (platform string, version string, err error) {
-	contents, err := public.ReadLines(HostEtc("os-release"))
+	contents, err := ReadLines(HostEtc("os-release"))
 	if err != nil {
 		return "", "", nil // return empty
 	}
@@ -104,14 +84,4 @@ func GetOSRelease() (platform string, version string, err error) {
 		}
 	}
 	return platform, version, nil
-}
-
-// Remove quotes of the source string(删除源字符的引号)
-func trimQuotes(s string) string {
-	if len(s) >= 2 {
-		if s[0] == '"' && s[len(s)-1] == '"' {
-			return s[1 : len(s)-1]
-		}
-	}
-	return s
 }
