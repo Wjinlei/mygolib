@@ -17,4 +17,6 @@ require (
 	github.com/shirou/gopsutil v2.20.7+incompatible
 	github.com/sirupsen/logrus v1.6.0
 	github.com/tebeka/strftime v0.1.5 // indirect
+	github.com/yeka/zip v0.0.0-20180914125537-d046722c6feb
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
 )

@@ -4,11 +4,11 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	random "mylib/random"
+	public "mylib/public"
 )
 
 var (
-	SecretKey = random.CreateRandomString(32)
+	SecretKey = public.CreateRandomString(32)
 )
 
 type Claims struct {
