@@ -13,6 +13,7 @@ func ExecShell(command string) (string, error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	cmd := exec.Command("bash", "-c", command)
+	cmd.Env = getSysctrlEnv(os.Environ())
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	defer stdout.Reset()
@@ -30,6 +31,7 @@ func ExecScript(params ...string) (string, error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	cmd := exec.Command("bash", params...)
+	cmd.Env = getSysctrlEnv(os.Environ())
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	defer stdout.Reset()
