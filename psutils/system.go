@@ -1,6 +1,7 @@
-package public
+package psutils
 
 import (
+	"mylib/public"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -86,7 +87,7 @@ func DoSysctrl(mib string) ([]string, error) {
 
 // 获取系统发行版本
 func GetOSRelease() (platform string, version string, err error) {
-	contents, err := ReadLines(HostEtc("os-release"))
+	contents, err := public.ReadLines(HostEtc("os-release"))
 	if err != nil {
 		return "", "", nil // return empty
 	}
