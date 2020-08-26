@@ -1,4 +1,4 @@
-package cmd
+package public
 
 import "testing"
 
@@ -10,7 +10,7 @@ func TestExecShell(t *testing.T) {
 }
 
 func TestExecScript(t *testing.T) {
-	_, err := ExecScript("echoHello.sh")
+	_, err := ExecScript("./.sayHello.sh")
 	if err != nil {
 		t.Error(err)
 	}

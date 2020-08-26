@@ -1,9 +1,31 @@
-package check
+package public
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
+
+// 过滤可能造成sql注入的字符
+func FilterSql(sql string) string {
+	sql = strings.ReplaceAll(sql, "'", "")
+	sql = strings.ReplaceAll(sql, "\"", "")
+	sql = strings.ReplaceAll(sql, "(", "")
+	sql = strings.ReplaceAll(sql, ")", "")
+	//sql = strings.ReplaceAll(sql, "*", "") // 由于域名可能会用到*,所以不过滤*
+	sql = strings.ReplaceAll(sql, ".", "_")
+	sql = strings.ReplaceAll(sql, "[", "")
+	sql = strings.ReplaceAll(sql, "]", "")
+	sql = strings.ReplaceAll(sql, " ", "")
+	sql = strings.ReplaceAll(sql, "=", "")
+	sql = strings.ReplaceAll(sql, ">", "")
+	sql = strings.ReplaceAll(sql, "<", "")
+	sql = strings.ReplaceAll(sql, "%", "")
+	sql = strings.ReplaceAll(sql, "\t", "")
+	return sql
+}
 
 // 校验域名格式
-func ChkDN(dn string) bool {
+func ChkDNFormat(dn string) bool {
 	ipv4Rule := `((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)`
 	ipv6Rule := `(([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|` +
 		`(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|` +
