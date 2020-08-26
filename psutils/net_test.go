@@ -20,3 +20,11 @@ func TestGetIOCounters(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestGetNetInterfaces(t *testing.T) {
+	v, err := GetNetInterfaces()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}

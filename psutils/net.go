@@ -48,3 +48,20 @@ func GetIOCounters() ([]net.IOCountersStat, error) {
 	}
 	return v, nil
 }
+
+// 获取网络接口
+func GetNetInterfaces() ([]net.InterfaceStat, error) {
+	v, err := net.Interfaces()
+	if err != nil {
+		return nil, err
+	}
+	if len(v) == 0 {
+		return nil, errors.New(fmt.Sprintf("Could not get NetInterfaceStat: %v", v))
+	}
+	for _, vv := range v {
+		if vv.Name == "" {
+			return nil, errors.New(fmt.Sprintf("Invalid NetInterface: %v", vv))
+		}
+	}
+	return v, nil
+}
