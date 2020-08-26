@@ -16,8 +16,18 @@ func NotExists(path string) bool {
 	return err != nil || os.IsNotExist(err)
 }
 
-// 判断元素是否存在于Slice中
-func Contains(s []interface{}, e interface{}) bool {
+// 判断元素是否存在于Slice中, String类型
+func ContainsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+// 判断元素是否存在于Slice中, Int类型
+func ContainsInt(s []int, e int) bool {
 	for _, a := range s {
 		if a == e {
 			return true
