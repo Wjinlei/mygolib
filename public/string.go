@@ -2,6 +2,7 @@ package public
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -47,4 +48,82 @@ func ChkDNFormat(dn string) bool {
 		}
 	}
 	return true
+}
+
+func IntToString(orig []int8) string {
+	ret := make([]byte, len(orig))
+	size := -1
+	for i, o := range orig {
+		if o == 0 {
+			size = i
+			break
+		}
+		ret[i] = byte(o)
+	}
+	if size == -1 {
+		size = len(orig)
+	}
+	return string(ret[0:size])
+}
+
+func UintToString(orig []uint8) string {
+	ret := make([]byte, len(orig))
+	size := -1
+	for i, o := range orig {
+		if o == 0 {
+			size = i
+			break
+		}
+		ret[i] = byte(o)
+	}
+	if size == -1 {
+		size = len(orig)
+	}
+	return string(ret[0:size])
+}
+
+func ByteToString(orig []byte) string {
+	n := -1
+	l := -1
+	for i, b := range orig {
+		// skip left side null
+		if l == -1 && b == 0 {
+			continue
+		}
+		if l == -1 {
+			l = i
+		}
+		if b == 0 {
+			break
+		}
+		n = i + 1
+	}
+	if n == -1 {
+		return string(orig)
+	}
+	return string(orig[l:n])
+}
+
+// Parse Hex to uint32 without error
+func HexToUint32(hex string) uint32 {
+	vv, _ := strconv.ParseUint(hex, 16, 32)
+	return uint32(vv)
+}
+
+// Parse to int32 without error
+func ParseInt32(val string) int32 {
+	vv, _ := strconv.ParseInt(val, 10, 32)
+	return int32(vv)
+}
+
+// Parse to uint64 without error
+func ParseUint64(val string) uint64 {
+	vv, _ := strconv.ParseInt(val, 10, 64)
+	return uint64(vv)
+}
+
+// Parse to Float64 without error
+func ParseFloat64(val string) float64 {
+	vv, _ := strconv.ParseFloat(val, 64)
+	return vv
 }
