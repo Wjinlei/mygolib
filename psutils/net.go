@@ -65,3 +65,20 @@ func GetNetInterfaces() ([]net.InterfaceStat, error) {
 	}
 	return v, nil
 }
+
+// 获取接口连接信息
+func GetConnections() ([]net.ConnectionStat, error) {
+	v, err := net.Connections("inet")
+	if err != nil {
+		return nil, err
+	}
+	if len(v) == 0 {
+		return nil, errors.New(fmt.Sprintf("Could not get NetConnections: %v", v))
+	}
+	for _, vv := range v {
+		if vv.Family == 0 {
+			return nil, errors.New(fmt.Sprintf("invalid NetConnections: %v", vv))
+		}
+	}
+	return v, nil
+}

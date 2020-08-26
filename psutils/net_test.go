@@ -28,3 +28,11 @@ func TestGetNetInterfaces(t *testing.T) {
 	}
 	fmt.Println(v)
 }
+
+func TestGetConnections(t *testing.T) {
+	v, err := GetConnections()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(v)
+}
