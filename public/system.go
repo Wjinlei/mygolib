@@ -2,6 +2,7 @@ package public
 
 import (
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 )
@@ -84,4 +85,13 @@ func GetOSRelease() (platform string, version string, err error) {
 		}
 	}
 	return platform, version, nil
+}
+
+// 获取用户家目录
+func GetHome() (string, error) {
+	user, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+	return user.HomeDir, nil
 }

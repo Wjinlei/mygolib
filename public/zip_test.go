@@ -8,14 +8,8 @@ func TestZIP(t *testing.T) {
 	}
 }
 
-func TestZIPEncrypt(t *testing.T) {
-	if err := ZIPEncrypt("./zip.go", "./test_password123.zip", "123"); err != nil {
-		t.Error(err)
-	}
-}
-
 func TestZIPDecrypt(t *testing.T) {
-	if err := ZIPDecrypt("./test_password123.zip", "tmp", "123", "utf-8"); err != nil {
+	if err := ZIPDecrypt("./test_nopassword.zip", "/tmp", "", "utf-8"); err != nil {
 		t.Error(err)
 	}
 }

@@ -13,6 +13,15 @@ func PathExists(path string) bool {
 	return false
 }
 
+// 判断路径是否是文件夹
+func IsDir(path string) (bool, error) {
+	s, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+	return s.IsDir(), nil
+}
+
 // 判断元素是否存在于Slice中, String类型
 func ContainsString(s []string, e string) bool {
 	for _, a := range s {
