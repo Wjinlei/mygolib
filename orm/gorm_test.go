@@ -19,4 +19,7 @@ func TestNewDB(t *testing.T) {
 	if err := db.Instance.DB().Ping(); err != nil {
 		t.Error(err)
 	}
+	db.Instance.AutoMigrate(&User{})
+	db.Instance.Create(&User{Name: "user1"})
+	db.Instance.Create(&User{Name: "user2"})
 }
