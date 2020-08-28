@@ -70,8 +70,8 @@ func NewInstance(dbOption *OptionStat) (*DBStat, error) {
 				LogPath:      "./log/db/db.log",
 				LogLevel:     logger.DebugLevel,
 				LogType:      "json",
-				MaxAge:       time.Duration(180) * time.Second,
-				RotationTime: time.Duration(60) * time.Second,
+				MaxAge:       time.Duration(3*24*3600) * time.Second,
+				RotationTime: time.Duration(3600) * time.Second,
 			})
 			if err != nil {
 				return nil, err
