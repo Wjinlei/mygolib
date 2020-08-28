@@ -1,34 +1,60 @@
 package orm
 
 import (
+	"errors"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 type OptionStat struct {
-	Driver     string
+	DBDriver   Driver
 	DataSource string
+	LogMode    bool
 }
 
-type DB struct {
-	OBJ *gorm.DB
+type Driver string
+
+const (
+	Sqlite Driver = "sqlite3"
+)
+
+type DBStat struct {
+	Instance *gorm.DB
 }
 
 var (
-	db *DB
+	globalDB    *DBStat
+	globalError error
+	dbOption    *OptionStat
 )
 
-func GetDB() *DB {
-	return db
+func GetInstance() *DBStat {
+	return globalDB
 }
 
-func NewDB(option *OptionStat) (*DB, error) {
-	newDB, err := gorm.Open(option.Driver, option.DataSource)
+func NewInstance(dbOption *OptionStat) (*DBStat, error) {
+	if globalDB == nil {
+		if dbOption == nil {
+			return nil, errors.New("Option is nil")
+		}
+		if dbOption.DBDriver == Sqlite {
+			sqliteDB, err := newSqlite(dbOption)
+			if err != nil {
+				return nil, err
+			}
+			return sqliteDB, nil
+		}
+	}
+	return globalDB, nil
+}
+
+func newSqlite(dbOption *OptionStat) (*DBStat, error) {
+	sqliteDB, err := gorm.Open("sqlite3", dbOption.DataSource)
 	if err != nil {
 		return nil, err
 	}
-	db = &DB{
-		OBJ: newDB,
-	}
-	return db, nil
+	sqliteDB.LogMode(dbOption.LogMode)
+	globalDB = &DBStat{Instance: sqliteDB}
+	return globalDB, nil
 }

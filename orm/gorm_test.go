@@ -3,14 +3,20 @@ package orm
 import "testing"
 
 func TestNewDB(t *testing.T) {
-	db, err := NewDB(&OptionStat{
-		Driver:     "sqlite3",
-		DataSource: "test.db",
-	})
-	if err != nil {
-		t.Error(err)
+	db := GetInstance()
+	if db == nil {
+		var err error
+		db, err = NewInstance(&OptionStat{
+			DBDriver:   Sqlite,
+			DataSource: "test.db",
+			LogMode:    true,
+		})
+		if err != nil {
+			t.Error(err)
+			return
+		}
 	}
-	if err := db.OBJ.DB().Ping(); err != nil {
+	if err := db.Instance.DB().Ping(); err != nil {
 		t.Error(err)
 	}
 }
