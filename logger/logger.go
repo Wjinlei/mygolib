@@ -16,7 +16,6 @@ type Option struct {
 	LogType      string        // 日志类型: json, text
 	MaxAge       time.Duration // 日志文件清理前的最长保存时间
 	RotationTime time.Duration // 日志文件多长时间清理(切割)一次
-	ReportCaller bool          // 将调用方法添加为字段,这会带来开销
 }
 
 type Logger struct {
@@ -72,7 +71,6 @@ func New(option *Option) (*Logger, error) {
 		})
 	}
 	logrusLogger.Level = logrus.Level(option.LogLevel)
-	logrusLogger.SetReportCaller(option.ReportCaller)
 	// 将路径转换为绝对路径
 	absLogPath, err := filepath.Abs(option.LogPath)
 	if err != nil {

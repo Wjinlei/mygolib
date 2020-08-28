@@ -12,7 +12,6 @@ func TestNew(t *testing.T) {
 		LogType:      "json",
 		MaxAge:       time.Duration(180) * time.Second,
 		RotationTime: time.Duration(60) * time.Second,
-		ReportCaller: true,
 	})
 	if err != nil {
 		t.Error(err)

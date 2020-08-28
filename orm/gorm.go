@@ -40,7 +40,7 @@ func (*CustomLogger) Print(v ...interface{}) {
 		mylogger.Debug(logger.Fields{
 			"module":   "gorm",
 			"type":     "sql",
-			"src":      v[1], // sql代码行号
+			"file":     v[1], // sql代码行号
 			"duration": v[2], // sql执行时间戳
 			"sql":      v[3], // sql语句
 			"values":   v[4], // sql数据
@@ -72,7 +72,6 @@ func NewInstance(dbOption *OptionStat) (*DBStat, error) {
 				LogType:      "json",
 				MaxAge:       time.Duration(180) * time.Second,
 				RotationTime: time.Duration(60) * time.Second,
-				ReportCaller: true,
 			})
 			if err != nil {
 				return nil, err
