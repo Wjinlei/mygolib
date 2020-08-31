@@ -1,4 +1,4 @@
-module mylib.go
+module mygolib
 
 go 1.14
 

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	public "mylib.go/public"
+	public "mygolib/public"
 )
 
 var (
