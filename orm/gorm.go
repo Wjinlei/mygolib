@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Wjinlei/mygolib/logger"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"mygolib/logger"
 )
 
 type OptionStat struct {

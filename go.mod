@@ -1,4 +1,4 @@
-module mygolib
+module github.com/Wjinlei/mygolib
 
 go 1.14
 
