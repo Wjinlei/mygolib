@@ -6,7 +6,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"mylib/logger"
+	"mylib.go/logger"
 )
 
 type OptionStat struct {

@@ -1,6 +1,6 @@
-module mylib
+module mylib.go
 
-go 1.15
+go 1.14
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
@@ -19,5 +19,4 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/yeka/zip v0.0.0-20180914125537-d046722c6feb
-	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
 )
