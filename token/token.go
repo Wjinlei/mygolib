@@ -3,7 +3,7 @@ package token
 import (
 	"time"
 
-	public "github.com/Wjinlei/mygolib/public"
+	public "github.com/Wjinlei/mylib.go/public"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
