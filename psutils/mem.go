@@ -23,7 +23,7 @@ func GetMemory() (*ResStat, error) {
 		UsedPercent: v.UsedPercent,
 		Title:       "内存使用率",
 		Info:        toString(v.Used, v.Total),
-		Data1:       int(v.UsedPercent),
+		Data:        int(v.UsedPercent),
 	}
 	return res, nil
 }

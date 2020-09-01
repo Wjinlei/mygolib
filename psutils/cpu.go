@@ -45,7 +45,7 @@ func GetCPUPercent() (*ResStat, error) {
 		UsedPercent: percent,
 		Title:       "CPU使用率",
 		Info:        strconv.Itoa(cpuCount) + "核心",
-		Data1:       int(percent),
+		Data:        int(percent),
 	}
 	return res, nil
 }

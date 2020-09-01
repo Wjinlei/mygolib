@@ -28,7 +28,7 @@ func GetLoadAvg() (*ResStat, error) {
 		Load15: v.Load15,
 		Title:  "平均负载",
 		Info:   dataInfo,
-		Data1:  data,
+		Data:   data,
 	}
 	return res, nil
 }

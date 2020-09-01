@@ -23,7 +23,7 @@ func GetDiskUsage(path string) (*ResStat, error) {
 		UsedPercent: v.UsedPercent,
 		Title:       path,
 		Info:        toString(v.Used, v.Total),
-		Data1:       int(v.UsedPercent),
+		Data:        int(v.UsedPercent),
 	}
 	return res, nil
 }

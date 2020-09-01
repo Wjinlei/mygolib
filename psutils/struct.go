@@ -13,7 +13,7 @@ type ResStat struct {
 	UsedPercent float64 `json:"usedPercent"` // 使用百分比
 	Title       string  `json:"title"`       // 标题
 	Info        string  `json:"info"`        // 信息
-	Data1       int     `json:"data1"`       // 扩展数据1, 一般用于前端需要
+	Data        int     `json:"data"`        // 扩展数据1, 一般用于前端需要
 	Data2       int     `json:"data2"`       // 保留
 	Data3       int     `json:"data3"`       // 保留
 	Data4       int     `json:"data4"`       // 保留

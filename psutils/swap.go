@@ -23,7 +23,7 @@ func GetSwap() (*ResStat, error) {
 		UsedPercent: v.UsedPercent,
 		Title:       "swap(交换空间)",
 		Info:        toString(v.Used, v.Total),
-		Data1:       int(v.UsedPercent),
+		Data:        int(v.UsedPercent),
 	}
 	return res, nil
 }
