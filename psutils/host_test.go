@@ -46,7 +46,7 @@ func TestGetPlatformInfo(t *testing.T) {
 }
 
 func TestGetHostId(t *testing.T) {
-	v, err := GetHostId()
+	v, err := GetHostID()
 	if err != nil {
 		t.Error(err)
 	}

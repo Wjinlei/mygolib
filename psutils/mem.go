@@ -1,38 +1,29 @@
 package psutils
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/shirou/gopsutil/mem"
 )
 
-type MemoryStat struct {
-	Total       uint64  `json:"total"`
-	Available   uint64  `json:"available"`
-	Used        uint64  `json:"used"`
-	UsedPercent float64 `json:"usedPercent"`
-}
-
-func (m MemoryStat) String() string {
-	s, _ := json.Marshal(m)
-	return string(s)
-}
-
-func GetMemory() (*MemoryStat, error) {
+// GetMemory 获取内存资源
+func GetMemory() (*ResStat, error) {
 	v, err := mem.VirtualMemory()
 	if err != nil {
 		return nil, err
 	}
 	empty := &mem.VirtualMemoryStat{}
 	if v == empty {
-		return nil, errors.New(fmt.Sprintf("error %v", v))
+		return nil, fmt.Errorf("error %v", v)
 	}
-	return &MemoryStat{
+	res := &ResStat{
 		Total:       v.Total,
-		Available:   v.Available,
+		Available:   v.Free,
 		Used:        v.Used,
 		UsedPercent: v.UsedPercent,
-	}, nil
+		Title:       "内存使用率",
+		Info:        toString(v.Used, v.Total),
+		Data1:       int(v.UsedPercent),
+	}
+	return res, nil
 }

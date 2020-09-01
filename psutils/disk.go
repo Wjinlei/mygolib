@@ -3,22 +3,32 @@ package psutils
 import (
 	"errors"
 	"fmt"
+
 	"github.com/shirou/gopsutil/disk"
 )
 
-// 获取指定路径的磁盘使用率
-func GetDiskUsage(path string) (*disk.UsageStat, error) {
+// GetDiskUsage 获取指定路径的磁盘使用率
+func GetDiskUsage(path string) (*ResStat, error) {
 	v, err := disk.Usage(path)
 	if err != nil {
 		return nil, err
 	}
 	if v.Path != path {
-		return nil, errors.New(fmt.Sprintf("path does not match, yourpath: %s, getpath: %s", path, v.Path))
+		return nil, fmt.Errorf("path does not match, yourpath: %s, getpath: %s", path, v.Path)
 	}
-	return v, nil
+	res := &ResStat{
+		Total:       v.Total,
+		Available:   v.Free,
+		Used:        v.Used,
+		UsedPercent: v.UsedPercent,
+		Title:       path,
+		Info:        toString(v.Used, v.Total),
+		Data1:       int(v.UsedPercent),
+	}
+	return res, nil
 }
 
-// 获取磁盘分区
+// GetDiskPart 获取磁盘分区
 func GetDiskPart() ([]disk.PartitionStat, error) {
 	ret, err := disk.Partitions(false)
 	if err != nil {
@@ -30,7 +40,7 @@ func GetDiskPart() ([]disk.PartitionStat, error) {
 	empty := disk.PartitionStat{}
 	for _, disk := range ret {
 		if disk == empty {
-			return nil, errors.New(fmt.Sprintf("Could not get device info %v", disk))
+			return nil, fmt.Errorf("Could not get device info %v", disk)
 		}
 	}
 	return ret, nil

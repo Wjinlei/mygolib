@@ -1,38 +1,29 @@
 package psutils
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/shirou/gopsutil/mem"
 )
 
-type SwapStat struct {
-	Total       uint64  `json:"total"`
-	Available   uint64  `json:"available"`
-	Used        uint64  `json:"used"`
-	UsedPercent float64 `json:"usedPercent"`
-}
-
-func (m SwapStat) String() string {
-	s, _ := json.Marshal(m)
-	return string(s)
-}
-
-func GetSwap() (*SwapStat, error) {
+// GetSwap 获取交换空间使用率
+func GetSwap() (*ResStat, error) {
 	v, err := mem.SwapMemory()
 	if err != nil {
 		return nil, err
 	}
 	empty := &mem.SwapMemoryStat{}
 	if v == empty {
-		return nil, errors.New(fmt.Sprintf("error %v", v))
+		return nil, fmt.Errorf("error %v", v)
 	}
-	return &SwapStat{
+	res := &ResStat{
 		Total:       v.Total,
 		Available:   v.Free,
 		Used:        v.Used,
 		UsedPercent: v.UsedPercent,
-	}, nil
+		Title:       "swap(交换空间)",
+		Info:        toString(v.Used, v.Total),
+		Data1:       int(v.UsedPercent),
+	}
+	return res, nil
 }
