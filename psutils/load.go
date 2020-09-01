@@ -2,6 +2,7 @@ package psutils
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/shirou/gopsutil/load"
 )
@@ -17,12 +18,8 @@ func GetLoadAvg() (*ResStat, error) {
 	if v == empty {
 		return nil, fmt.Errorf("Get loadavg failed: %v", v)
 	}
-	// 获取CPU核心数
-	cpuCount, err := GetCPUCount(true)
-	if err != nil {
-		return nil, err
-	}
 	// 计算平均负载 https://www.tecmint.com/understand-linux-load-averages-and-monitor-performance/
+	cpuCount := runtime.NumCPU()
 	loadAvg := (cpuCount*100 + (int(v.Load1)-cpuCount)*100) / cpuCount / cpuCount
 	loadAvgInfo := toStringLoadAvg(loadAvg)
 	res := &ResStat{
