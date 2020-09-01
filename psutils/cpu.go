@@ -24,17 +24,17 @@ func GetCPUInfo() ([]cpu.InfoStat, error) {
 // GetCPUPercent 获取CPU使用率
 func GetCPUPercent() (*ResStat, error) {
 	numcpu := runtime.NumCPU()
-	result := 0.0
+	percent := 0.0
 	v, err := cpu.Percent(time.Second, false)
 	if err != nil {
 		return nil, err
 	}
-	for _, percent := range v {
+	for _, vv := range v {
 		// Check for slightly greater then 100% to account for any rounding issues.
-		if percent < 0.0 || percent > 100.0001*float64(numcpu) {
-			return nil, fmt.Errorf("CPUPercent value is invalid: %f", percent)
+		if vv < 0.0 || vv > 100.0001*float64(numcpu) {
+			return nil, fmt.Errorf("CPUPercent value is invalid: %f", vv)
 		}
-		result = percent
+		percent = vv
 	}
 	// 获取CPU核心数
 	cpuCount, err := GetCPUCount(true)
@@ -42,10 +42,10 @@ func GetCPUPercent() (*ResStat, error) {
 		return nil, err
 	}
 	res := &ResStat{
-		UsedPercent: result,
+		UsedPercent: percent,
 		Title:       "CPU使用率",
 		Info:        strconv.Itoa(cpuCount) + "核心",
-		Data1:       int(result),
+		Data1:       int(percent),
 	}
 	return res, nil
 }

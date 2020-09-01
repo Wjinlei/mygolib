@@ -20,15 +20,15 @@ func GetLoadAvg() (*ResStat, error) {
 	}
 	// 计算平均负载 https://www.tecmint.com/understand-linux-load-averages-and-monitor-performance/
 	cpuCount := runtime.NumCPU()
-	loadAvg := (cpuCount*100 + (int(v.Load1)-cpuCount)*100) / cpuCount / cpuCount
-	loadAvgInfo := toStringLoadAvg(loadAvg)
+	data := (cpuCount*100 + (int(v.Load1)-cpuCount)*100) / cpuCount / cpuCount
+	dataInfo := toStringLoadAvg(data)
 	res := &ResStat{
 		Load1:  v.Load1,
 		Load5:  v.Load5,
 		Load15: v.Load15,
 		Title:  "平均负载",
-		Info:   loadAvgInfo,
-		Data1:  loadAvg,
+		Info:   dataInfo,
+		Data1:  data,
 	}
 	return res, nil
 }
