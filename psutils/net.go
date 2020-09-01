@@ -19,17 +19,19 @@ func GetIOCountersAll() ([]net.IOCountersStat, error) {
 	if v[0].Name != "all" {
 		return nil, fmt.Errorf("Invalid NetIOCounters: %v", v)
 	}
-	per, err := net.IOCounters(true)
-	if err != nil {
-		return nil, err
-	}
-	var pr uint64
-	for _, p := range per {
-		pr += p.PacketsRecv
-	}
-	if v[0].PacketsRecv != pr {
-		return nil, fmt.Errorf("invalid sum value: %v, %v", v[0].PacketsRecv, pr)
-	}
+	/*
+		per, err := net.IOCounters(true)
+		if err != nil {
+			return nil, err
+		}
+		var pr uint64
+		for _, p := range per {
+			pr += p.PacketsRecv
+		}
+		if v[0].PacketsRecv != pr {
+			return nil, fmt.Errorf("invalid sum value: %v, %v", v[0].PacketsRecv, pr)
+		}
+	*/
 	return v, nil
 }
 
