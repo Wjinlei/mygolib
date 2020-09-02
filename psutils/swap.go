@@ -23,7 +23,7 @@ func GetSwap() (*ResStat, error) {
 		Used:        v.Used,
 		UsedPercent: v.UsedPercent,
 		Title:       "swap(交换空间)",
-		Info:        public.ByteToString(v.Used) + "/" + public.ByteToString(v.Total),
+		Info:        public.Uint64ToKBMBGB(v.Used) + "/" + public.Uint64ToKBMBGB(v.Total),
 		Data:        int(v.UsedPercent),
 	}
 	return res, nil
