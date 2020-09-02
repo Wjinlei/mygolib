@@ -5,16 +5,16 @@ import (
 	"testing"
 )
 
-func TestGetDiskUsage(t *testing.T) {
-	v, err := GetDiskUsage("/")
+func TestGetUsage(t *testing.T) {
+	v, err := GetUsage("/")
 	if err != nil {
 		t.Error(err)
 	}
 	fmt.Println(v)
 }
 
-func TestGetDiskPart(t *testing.T) {
-	v, err := GetDiskPart()
+func TestGetPartitions(t *testing.T) {
+	v, err := GetPartitions()
 	if err != nil {
 		t.Error(err)
 	}

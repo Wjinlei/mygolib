@@ -8,8 +8,8 @@ import (
 	"github.com/shirou/gopsutil/disk"
 )
 
-// GetDiskUsage 获取指定路径的磁盘使用率
-func GetDiskUsage(path string) (*ResStat, error) {
+// GetUsage 获取指定路径的磁盘使用率
+func GetUsage(path string) (*ResStat, error) {
 	v, err := disk.Usage(path)
 	if err != nil {
 		return nil, err
@@ -29,8 +29,8 @@ func GetDiskUsage(path string) (*ResStat, error) {
 	return res, nil
 }
 
-// GetDiskPart 获取磁盘分区
-func GetDiskPart() ([]disk.PartitionStat, error) {
+// GetPartitions 获取磁盘分区
+func GetPartitions() ([]disk.PartitionStat, error) {
 	ret, err := disk.Partitions(false)
 	if err != nil {
 		return nil, err
