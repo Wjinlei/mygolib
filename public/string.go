@@ -34,8 +34,8 @@ func TrimQuotes(s string) string {
 	return s
 }
 
-// ByteToString 将uint64类型表示的字节转换为带上单位的String
-func ByteToString(value uint64) string {
+// Uint64ToKBMBGB 将uint64类型表示的字节转换为带上单位的String
+func Uint64ToKBMBGB(value uint64) string {
 	var retStr string
 	if value > 1073741824 {
 		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)/float64(1024)) + "(GB)"
@@ -43,6 +43,19 @@ func ByteToString(value uint64) string {
 		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)) + "(MB)"
 	} else {
 		retStr = fmt.Sprintf("%.2f", float64(value)) + "(KB)"
+	}
+	return retStr
+}
+
+// Float64ToKBMBGB 将float64类型表示的字节转换为带上单位的String
+func Float64ToKBMBGB(value float64) string {
+	var retStr string
+	if value > 1073741824 {
+		retStr = fmt.Sprintf("%.2f", value) + "(GB)"
+	} else if value > 1048576 {
+		retStr = fmt.Sprintf("%.2f", value) + "(MB)"
+	} else {
+		retStr = fmt.Sprintf("%.2f", value) + "(KB)"
 	}
 	return retStr
 }
