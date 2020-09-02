@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// 写入字符串到文件
+// WriteFile 写入字符串到文件
 func WriteFile(filepath string, content string) error {
 	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -18,7 +18,7 @@ func WriteFile(filepath string, content string) error {
 	return nil
 }
 
-// 读取文件内容
+// ReadFile 读取文件内容
 func ReadFile(filename string) (string, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -27,13 +27,12 @@ func ReadFile(filename string) (string, error) {
 	return string(content), nil
 }
 
-// 读所有行, ReadLinesOffsetN简单封装
+// ReadLines 读所有行, ReadLinesOffsetN简单封装
 func ReadLines(filename string) ([]string, error) {
 	return ReadLinesOffsetN(filename, 0, -1)
 }
 
-// 读几行, offset表示从第几行开始读, n表示读几行
-// 返回读取到的行的Slice
+// ReadLinesOffsetN 读几行, offset表示从第几行开始读, n表示读几行, 返回读取到的行的Slice
 func ReadLinesOffsetN(filename string, offset uint, n int) ([]string, error) {
 	f, err := os.Open(filename)
 	if err != nil {
@@ -55,7 +54,7 @@ func ReadLinesOffsetN(filename string, offset uint, n int) ([]string, error) {
 	return ret, nil
 }
 
-// 移动或重命名文件
+// MoveFile 移动或重命名文件
 func MoveFile(oldpath string, newpath string) error {
 	if err := os.Rename(oldpath, newpath); err != nil {
 		return err

@@ -12,7 +12,7 @@ import (
 	"github.com/yeka/zip"
 )
 
-// 不加密压缩
+// ZIP 不加密压缩
 func ZIP(srcpath, destpath, encoding string) error {
 	// 判断传入的源路径是否是目录
 	ok, err := IsDir(srcpath)
@@ -33,7 +33,7 @@ func ZIP(srcpath, destpath, encoding string) error {
 	return nil
 }
 
-// 压缩文件
+// ZIPFile 压缩文件
 func ZIPFile(srcpath, destpath, encoding string) error {
 	// 编码器
 	encoder := mahonia.NewEncoder(encoding)
@@ -69,7 +69,7 @@ func ZIPFile(srcpath, destpath, encoding string) error {
 	return nil
 }
 
-// 压缩目录
+// ZIPDir 压缩目录
 func ZIPDir(srcpath, destpath, encoding string) error {
 	// 编码器
 	encoder := mahonia.NewEncoder(encoding)
@@ -107,16 +107,16 @@ func ZIPDir(srcpath, destpath, encoding string) error {
 	return nil
 }
 
-// 解压缩
+// ZIPDecrypt 解压缩
 func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	encoder := mahonia.NewEncoder(charset)
 	if encoder == nil {
-		return errors.New(fmt.Sprintf("Charset error: [%s]", charset))
+		return fmt.Errorf("Charset error: [%s]", charset)
 	}
 	password = encoder.ConvertString(password)
 	decoder := mahonia.NewDecoder(charset)
 	if decoder == nil {
-		return errors.New(fmt.Sprintf("Charset error: [%s]", charset))
+		return fmt.Errorf("Charset error: [%s]", charset)
 	}
 	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {

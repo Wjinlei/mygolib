@@ -3,6 +3,7 @@ package psutils
 import (
 	"fmt"
 
+	"github.com/Wjinlei/mygolib/public"
 	"github.com/shirou/gopsutil/mem"
 )
 
@@ -22,7 +23,7 @@ func GetMemory() (*ResStat, error) {
 		Used:        v.Used,
 		UsedPercent: v.UsedPercent,
 		Title:       "内存使用率",
-		Info:        toString(v.Used, v.Total),
+		Info:        public.ByteToString(v.Used) + "/" + public.ByteToString(v.Total),
 		Data:        int(v.UsedPercent),
 	}
 	return res, nil

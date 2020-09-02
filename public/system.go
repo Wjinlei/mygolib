@@ -26,26 +26,32 @@ func GetEnv(key string, dfault string, combineWith ...string) string {
 	}
 }
 
+// HostProc 从环境变量获取proc路径
 func HostProc(combineWith ...string) string {
 	return GetEnv("HOST_PROC", "/proc", combineWith...)
 }
 
+// HostSys 从环境变量获取sys路径
 func HostSys(combineWith ...string) string {
 	return GetEnv("HOST_SYS", "/sys", combineWith...)
 }
 
+// HostEtc 从环境变量获取etc路径
 func HostEtc(combineWith ...string) string {
 	return GetEnv("HOST_ETC", "/etc", combineWith...)
 }
 
+// HostVar 从环境变量获取var路径
 func HostVar(combineWith ...string) string {
 	return GetEnv("HOST_VAR", "/var", combineWith...)
 }
 
+// HostRun 从环境变量获取run路径
 func HostRun(combineWith ...string) string {
 	return GetEnv("HOST_RUN", "/run", combineWith...)
 }
 
+// HostDev 从环境变量获取dev路径
 func HostDev(combineWith ...string) string {
 	return GetEnv("HOST_DEV", "/dev", combineWith...)
 }
@@ -66,7 +72,7 @@ func getSysctrlEnv(env []string) []string {
 	return env
 }
 
-// 获取系统发行版本
+// GetOSRelease 获取系统发行版本
 func GetOSRelease() (platform string, version string, err error) {
 	contents, err := ReadLines(HostEtc("os-release"))
 	if err != nil {
@@ -79,15 +85,15 @@ func GetOSRelease() (platform string, version string, err error) {
 		}
 		switch field[0] {
 		case "ID": // use ID for lowercase
-			platform = trimQuotes(field[1])
+			platform = TrimQuotes(field[1])
 		case "VERSION":
-			version = trimQuotes(field[1])
+			version = TrimQuotes(field[1])
 		}
 	}
 	return platform, version, nil
 }
 
-// 获取用户家目录
+// GetHome 获取用户家目录
 func GetHome() (string, error) {
 	user, err := user.Current()
 	if err != nil {

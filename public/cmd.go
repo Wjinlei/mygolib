@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// 执行一条命令
+// ExecShell 执行一条命令
 func ExecShell(command string) (string, error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -26,7 +26,7 @@ func ExecShell(command string) (string, error) {
 	return strings.TrimSpace(stdout.String()), nil
 }
 
-// 执行一个脚本
+// ExecScript 执行一个脚本
 func ExecScript(params ...string) (string, error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -44,7 +44,7 @@ func ExecScript(params ...string) (string, error) {
 	return strings.TrimSpace(stdout.String()), nil
 }
 
-// 执行sysctl
+// DoSysctrl 执行sysctl
 func DoSysctrl(mib string) ([]string, error) {
 	sysctl, err := exec.LookPath("sysctl")
 	if err != nil {

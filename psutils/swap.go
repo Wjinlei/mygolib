@@ -3,6 +3,7 @@ package psutils
 import (
 	"fmt"
 
+	"github.com/Wjinlei/mygolib/public"
 	"github.com/shirou/gopsutil/mem"
 )
 
@@ -22,7 +23,7 @@ func GetSwap() (*ResStat, error) {
 		Used:        v.Used,
 		UsedPercent: v.UsedPercent,
 		Title:       "swap(交换空间)",
-		Info:        toString(v.Used, v.Total),
+		Info:        public.ByteToString(v.Used) + "/" + public.ByteToString(v.Total),
 		Data:        int(v.UsedPercent),
 	}
 	return res, nil

@@ -5,7 +5,7 @@ import (
 	"path"
 )
 
-// 创建目录
+// MakeDir 创建目录
 func MakeDir(filepath string) error {
 	dirpath := path.Dir(filepath)
 	if !PathExists(dirpath) {
@@ -16,7 +16,7 @@ func MakeDir(filepath string) error {
 	return nil
 }
 
-// 创建目录(所有层级)
+// MakeDirAll 创建目录(所有层级)
 func MakeDirAll(filepath string) error {
 	dirpath := path.Dir(filepath)
 	if !PathExists(dirpath) {

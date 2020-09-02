@@ -23,12 +23,12 @@ func GetLoadAvg() (*ResStat, error) {
 	data := (cpuCount*100 + (int(v.Load1)-cpuCount)*100) / cpuCount / cpuCount
 	dataInfo := toStringLoadAvg(data)
 	res := &ResStat{
-		Load1:  v.Load1,
-		Load5:  v.Load5,
-		Load15: v.Load15,
-		Title:  "平均负载",
-		Info:   dataInfo,
-		Data:   data,
+		Title: "平均负载",
+		Info:  dataInfo,
+		Data:  data,
+		Data2: v.Load1,
+		Data3: v.Load5,
+		Data4: v.Load15,
 	}
 	return res, nil
 }

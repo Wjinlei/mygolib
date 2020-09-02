@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Wjinlei/mygolib/public"
 	"github.com/shirou/gopsutil/disk"
 )
 
@@ -22,7 +23,7 @@ func GetDiskUsage(path string) (*ResStat, error) {
 		Used:        v.Used,
 		UsedPercent: v.UsedPercent,
 		Title:       path,
-		Info:        toString(v.Used, v.Total),
+		Info:        public.ByteToString(v.Used) + "/" + public.ByteToString(v.Total),
 		Data:        int(v.UsedPercent),
 	}
 	return res, nil

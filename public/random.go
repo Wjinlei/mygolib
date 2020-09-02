@@ -6,7 +6,7 @@ import (
 	"math/big"
 )
 
-// 生成随机字符串
+// CreateRandomString 生成随机字符串
 func CreateRandomString(len int) string {
 	var container string
 	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
