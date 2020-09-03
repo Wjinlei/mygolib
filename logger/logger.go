@@ -32,8 +32,7 @@ type LogLevel uint32
 
 // 日志级别枚举
 const (
-	TraceLevel LogLevel = iota
-	PanicLevel
+	PanicLevel LogLevel = iota
 	FatalLevel
 	ErrorLevel
 	WarnLevel
@@ -96,99 +95,61 @@ func New(option *Option) (*Logger, error) {
 }
 
 // Debug 打印Debug日志
-func (l *Logger) Debug(message string, data ...interface{}) {
-	l.logger.WithField("Fields", data).Debug(message)
+func (l *Logger) Debug(msg string, data Fields) {
+	if l.logger.Level >= logrus.Level(DebugLevel) {
+		if data == nil {
+			data = Fields{}
+		}
+		l.logger.WithFields(logrus.Fields(data)).Debug(msg)
+	}
 }
 
 // Info 打印Info日志
-func (l *Logger) Info(message string, data ...interface{}) {
-	l.logger.WithField("Fields", data).Info(message)
+func (l *Logger) Info(msg string, data Fields) {
+	if l.logger.Level >= logrus.Level(InfoLevel) {
+		if data == nil {
+			data = Fields{}
+		}
+		l.logger.WithFields(logrus.Fields(data)).Info(msg)
+	}
 }
 
 // Warn 打印Warn日志
-func (l *Logger) Warn(message string, data ...interface{}) {
-	l.logger.WithField("Fields", data).Warn(message)
+func (l *Logger) Warn(msg string, data Fields) {
+	if l.logger.Level >= logrus.Level(WarnLevel) {
+		if data == nil {
+			data = Fields{}
+		}
+		l.logger.WithFields(logrus.Fields(data)).Warn(msg)
+	}
 }
 
 // Error 打印Error日志
-func (l *Logger) Error(message string, data ...interface{}) {
-	l.logger.WithField("Fields", data).Error(message)
+func (l *Logger) Error(msg string, data Fields) {
+	if l.logger.Level >= logrus.Level(ErrorLevel) {
+		if data == nil {
+			data = Fields{}
+		}
+		l.logger.WithFields(logrus.Fields(data)).Error(msg)
+	}
 }
 
 // Fatal 打印Fatal日志
-func (l *Logger) Fatal(message string, data ...interface{}) {
-	l.logger.WithField("Fields", data).Fatal(message)
+func (l *Logger) Fatal(msg string, data Fields) {
+	if l.logger.Level >= logrus.Level(FatalLevel) {
+		if data == nil {
+			data = Fields{}
+		}
+		l.logger.WithFields(logrus.Fields(data)).Fatal(msg)
+	}
 }
 
 // Panic 打印Panic日志
-func (l *Logger) Panic(message string, data ...interface{}) {
-	l.logger.WithField("Fields", data).Panic(message)
-}
-
-// Trace 打印Trace日志
-func (l *Logger) Trace(err error, data ...interface{}) {
-	l.logger.WithField("Fields", data).Trace(err)
-}
-
-// Debug 全局方式调用Debug函数
-func Debug(message string, data ...interface{}) {
-	if logger.logger == nil {
-		logrus.WithField("Fields", data).Debug(message)
-		return
+func (l *Logger) Panic(msg string, data Fields) {
+	if l.logger.Level >= logrus.Level(PanicLevel) {
+		if data == nil {
+			data = Fields{}
+		}
+		l.logger.WithFields(logrus.Fields(data)).Panic(msg)
 	}
-	logger.logger.WithField("Fields", data).Debug(message)
-}
-
-// Info 全局方式调用Info函数
-func Info(message string, data ...interface{}) {
-	if logger.logger == nil {
-		logrus.WithField("Fields", data).Info(message)
-		return
-	}
-	logger.logger.WithField("Fields", data).Info(message)
-}
-
-// Warn 全局方式调用Warn函数
-func Warn(message string, data ...interface{}) {
-	if logger.logger == nil {
-		logrus.WithField("Fields", data).Warn(message)
-		return
-	}
-	logger.logger.WithField("Fields", data).Warn(message)
-}
-
-// Error 全局方式调用Error函数
-func Error(message string, data ...interface{}) {
-	if logger.logger == nil {
-		logrus.WithField("Fields", data).Error(message)
-		return
-	}
-	logger.logger.WithField("Fields", data).Error(message)
-}
-
-// Fatal 全局方式调用Fatal函数
-func Fatal(message string, data ...interface{}) {
-	if logger.logger == nil {
-		logrus.WithField("Fields", data).Fatal(message)
-		return
-	}
-	logger.logger.WithField("Fields", data).Fatal(message)
-}
-
-// Panic 全局方式调用Panic函数
-func Panic(message string, data ...interface{}) {
-	if logger.logger == nil {
-		logrus.WithField("Fields", data).Panic(message)
-		return
-	}
-	logger.logger.WithField("Fields", data).Panic(message)
-}
-
-// Trace 全局方式调用Trace函数
-func Trace(err error, data ...interface{}) {
-	if logger.logger == nil {
-		logrus.WithField("Fields", data).Trace(err)
-		return
-	}
-	logger.logger.WithField("Fields", data).Trace(err)
 }

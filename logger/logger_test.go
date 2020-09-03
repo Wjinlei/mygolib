@@ -19,7 +19,7 @@ func TestNew(t *testing.T) {
 		return
 	}
 	for {
-		logger.Debug("测试消息", Fields{"name": "wjl"})
+		logger.Info("测试消息", Fields{"name": "wjl"})
 		time.Sleep(time.Duration(2) * time.Second)
 	}
 }
