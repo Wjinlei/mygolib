@@ -66,7 +66,7 @@ func GetInstance(dbOption *Option) (*DB, error) {
 			return nil, errors.New("Option is nil")
 		}
 		if dbOption.LogMode == true {
-			filePath, err := filepath.Abs("log/db/db.log")
+			filePath, err := filepath.Abs("log/sql/sql.log")
 			if err != nil {
 				return nil, err
 			}
