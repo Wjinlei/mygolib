@@ -6,7 +6,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	logger, err := New(&Option{
+	logger, err := GetLogger(&Option{
 		LogPath:      "./log/test.log",
 		LogLevel:     DebugLevel,
 		LogType:      "json",

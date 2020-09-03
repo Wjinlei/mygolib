@@ -1,5 +1,33 @@
 package logger
 
+// +---------------------------------------------------------------------
+// | Description: 封装日志库
+// +---------------------------------------------------------------------
+// | Copyright (c) 2004-2020 护卫神(http://hws.com) All rights reserved.
+// +---------------------------------------------------------------------
+// | Author: Wjinlei <1976883731@qq.com>
+// +---------------------------------------------------------------------
+//
+//                  ___====-_  _-====___
+//             _--^^^#####/      \#####^^^--_
+//          _-^##########/ (    ) \##########^-_
+//         -############/  |\^^/|  \############-
+//       _/############/   (@::@)   \############\_
+//     /#############((     \  /     ))#############\
+//     -###############\    (oo)    /###############-
+//    -#################\  / VV \  /#################-
+//   -###################\/      \/###################-
+// _#/|##########/\######(   /\   )######/\##########|\#_
+// |/ |#/\#/\#/\/  \#/\##\  |  |  /##/\#/  \/\#/\#/\#| \|
+// '  |/  V  V      V  \#\| |  | |/#/  V      V  V  \|  '
+//    '   '  '      '   / | |  | | \   '      '  '   '
+//                     (  | |  | |  )
+//                    __\ | |  | | /__
+//                   (vvv(VVV)(VVV)vvv)
+//
+//                  自动神龙护体
+//                代码永无bug!
+
 import (
 	"fmt"
 	"path/filepath"
@@ -38,6 +66,7 @@ const (
 	WarnLevel
 	InfoLevel
 	DebugLevel
+	TraceLevel
 )
 
 // 默认选项
@@ -51,47 +80,52 @@ var (
 	logger *Logger
 )
 
-// GetLogger 返回logger
-func GetLogger() *Logger {
-	return logger
-}
-
-// New 产生新的logger
-func New(option *Option) (*Logger, error) {
-	logrusLogger := logrus.New()
-	// 设置日志格式
-	switch option.LogType {
-	case "json":
-		logrusLogger.SetFormatter(&logrus.JSONFormatter{
-			TimestampFormat: DefaultTimeFormat,
-			DataKey:         DefaultDataKey,
-			PrettyPrint:     option.PrettyPrint,
-		})
-	default:
-		logrusLogger.SetFormatter(&logrus.TextFormatter{
-			TimestampFormat: DefaultTimeFormat,
-		})
-	}
-	logrusLogger.Level = logrus.Level(option.LogLevel)
-	// 将路径转换为绝对路径
-	absLogPath, err := filepath.Abs(option.LogPath)
-	if err != nil {
-		return nil, err
-	}
-	rotator, err := rotatelogs.New(
-		fmt.Sprintf("%s-%s", absLogPath, DefaultDateFormat),
-		rotatelogs.WithLinkName(absLogPath),
-		rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
-		rotatelogs.WithRotationTime(option.RotationTime), // 多久滚动一次
-	)
-	if err != nil {
-		return nil, err
-	}
-	logrusLogger.SetOutput(rotator)
-	logger = &Logger{
-		logger: logrusLogger,
+// GetLogger 产生新的logger
+func GetLogger(option *Option) (*Logger, error) {
+	if logger == nil {
+		logrusLogger := logrus.New()
+		switch option.LogType {
+		case "json":
+			logrusLogger.SetFormatter(&logrus.JSONFormatter{
+				TimestampFormat: DefaultTimeFormat,
+				DataKey:         DefaultDataKey,
+				PrettyPrint:     option.PrettyPrint,
+			})
+		default:
+			logrusLogger.SetFormatter(&logrus.TextFormatter{
+				TimestampFormat: DefaultTimeFormat,
+			})
+		}
+		logrusLogger.Level = logrus.Level(option.LogLevel)
+		filePath, err := filepath.Abs(option.LogPath)
+		if err != nil {
+			return nil, err
+		}
+		rotator, err := rotatelogs.New(
+			fmt.Sprintf("%s-%s", filePath, DefaultDateFormat),
+			rotatelogs.WithLinkName(filePath),
+			rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
+			rotatelogs.WithRotationTime(option.RotationTime), // 多久滚动一次
+		)
+		if err != nil {
+			return nil, err
+		}
+		logrusLogger.SetOutput(rotator)
+		logger = &Logger{
+			logger: logrusLogger,
+		}
 	}
 	return logger, nil
+}
+
+// Trace 打印Debug日志
+func (l *Logger) Trace(msg string, data Fields) {
+	if l.logger.Level >= logrus.Level(TraceLevel) {
+		if data == nil {
+			data = Fields{}
+		}
+		l.logger.WithFields(logrus.Fields(data)).Trace(msg)
+	}
 }
 
 // Debug 打印Debug日志
