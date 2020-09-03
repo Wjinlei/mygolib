@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 	"time"
@@ -12,10 +13,11 @@ import (
 // Option 选项定义
 type Option struct {
 	LogPath      string        // 日志路径
-	LogLevel     Level         // 日志级别
+	LogLevel     LogLevel      // 日志级别
 	LogType      string        // 日志类型: json, text
 	MaxAge       time.Duration // 日志文件清理前的最长保存时间
 	RotationTime time.Duration // 日志文件多长时间清理(切割)一次
+	PrettyPrint  bool          // 是否美化输出
 }
 
 // Logger 日志结构体
@@ -26,12 +28,12 @@ type Logger struct {
 // Fields 自定义字段
 type Fields map[string]interface{}
 
-// Level 日志级别类型
-type Level uint32
+// LogLevel 日志级别类型
+type LogLevel uint32
 
 // 日志级别枚举
 const (
-	PanicLevel Level = iota
+	PanicLevel LogLevel = iota
 	FatalLevel
 	ErrorLevel
 	WarnLevel
@@ -40,12 +42,23 @@ const (
 	TraceLevel
 )
 
+// Interface 和Gorm 2.0集成
+type Interface interface {
+	LogMode(LogLevel) Interface
+	Debug(context.Context, string, ...interface{})
+	Info(context.Context, string, ...interface{})
+	Warn(context.Context, string, ...interface{})
+	Error(context.Context, string, ...interface{})
+	Fatal(context.Context, string, ...interface{})
+	Panic(context.Context, string, ...interface{})
+	Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error)
+}
+
 // 默认选项
 const (
-	DefaultDateFormat  = "%Y%m%d%H%M"          // 默认日期格式
-	DefaultTimeFormat  = "2006-01-02 15:04:05" // 默认时间格式
-	DefaultDataKey     = "data"                // 附加字段都会作为该字段的嵌入字段
-	DefaultPrettyPrint = false                 // 默认美化输出
+	DefaultDateFormat = "%Y%m%d%H%M"          // 默认日期格式
+	DefaultTimeFormat = "2006-01-02 15:04:05" // 默认时间格式
+	DefaultDataKey    = "data"                // 附加字段都会作为该字段的嵌入字段
 )
 
 var (
@@ -58,7 +71,7 @@ func GetLogger() *Logger {
 }
 
 // New 产生新的logger
-func New(option *Option) (*Logger, error) {
+func New(option *Option) (Interface, error) {
 	logrusLogger := logrus.New()
 	// 设置日志格式
 	switch option.LogType {
@@ -66,7 +79,7 @@ func New(option *Option) (*Logger, error) {
 		logrusLogger.SetFormatter(&logrus.JSONFormatter{
 			TimestampFormat: DefaultTimeFormat,
 			DataKey:         DefaultDataKey,
-			PrettyPrint:     DefaultPrettyPrint,
+			PrettyPrint:     option.PrettyPrint,
 		})
 	default:
 		logrusLogger.SetFormatter(&logrus.TextFormatter{
@@ -95,142 +108,120 @@ func New(option *Option) (*Logger, error) {
 	return logger, nil
 }
 
+// LogMode gorm 2.0 会用到这个函数来设置日志器的日志级别
+func (l *Logger) LogMode(level LogLevel) Interface {
+	newlogger := *l
+	newlogger.logger.SetLevel(logrus.Level(level))
+	return &newlogger
+}
+
 // Debug 打印Debug日志
-func (l *Logger) Debug(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
+func (l *Logger) Debug(ctx context.Context, msg string, data ...interface{}) {
+	if l.logger.Level >= logrus.Level(DebugLevel) {
+		l.logger.WithField("Fields", data).Debug(msg)
 	}
-	l.logger.WithFields(logrus.Fields(fields)).Debug(message)
 }
 
 // Info 打印Info日志
-func (l *Logger) Info(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
+func (l *Logger) Info(ctx context.Context, msg string, data ...interface{}) {
+	if l.logger.Level >= logrus.Level(InfoLevel) {
+		l.logger.WithField("Fields", data).Info(msg)
 	}
-	l.logger.WithFields(logrus.Fields(fields)).Info(message)
 }
 
 // Warn 打印Warn日志
-func (l *Logger) Warn(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
+func (l *Logger) Warn(ctx context.Context, msg string, data ...interface{}) {
+	if l.logger.Level >= logrus.Level(WarnLevel) {
+		l.logger.WithField("Fields", data).Warn(msg)
 	}
-	l.logger.WithFields(logrus.Fields(fields)).Warn(message)
 }
 
 // Error 打印Error日志
-func (l *Logger) Error(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
+func (l *Logger) Error(ctx context.Context, msg string, data ...interface{}) {
+	if l.logger.Level >= logrus.Level(ErrorLevel) {
+		l.logger.WithField("Fields", data).Error(msg)
 	}
-	l.logger.WithFields(logrus.Fields(fields)).Error(message)
 }
 
 // Fatal 打印Fatal日志
-func (l *Logger) Fatal(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
+func (l *Logger) Fatal(ctx context.Context, msg string, data ...interface{}) {
+	if l.logger.Level >= logrus.Level(FatalLevel) {
+		l.logger.WithField("Fields", data).Fatal(msg)
 	}
-	l.logger.WithFields(logrus.Fields(fields)).Fatal(message)
 }
 
 // Panic 打印Panic日志
-func (l *Logger) Panic(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
+func (l *Logger) Panic(ctx context.Context, msg string, data ...interface{}) {
+	if l.logger.Level >= logrus.Level(PanicLevel) {
+		l.logger.WithField("Fields", data).Panic(msg)
 	}
-	l.logger.WithFields(logrus.Fields(fields)).Panic(message)
 }
 
 // Trace 打印Trace日志
-func (l *Logger) Trace(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
-	l.logger.WithFields(logrus.Fields(fields)).Trace(message)
+func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+	sql, rows := fc()
+	l.logger.WithFields(logrus.Fields{"sql": sql, "rows": rows}).Trace(err)
 }
 
 // Debug 全局方式调用Debug函数
-func Debug(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
+func Debug(ctx context.Context, msg string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.Debug(fields, message)
+		logrus.WithField("Fields", data).Debug(msg)
 		return
 	}
-	logger.logger.WithFields(logrus.Fields(fields)).Debug(message)
+	logger.logger.WithField("Fields", data).Debug(msg)
 }
 
 // Info 全局方式调用Info函数
-func Info(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
+func Info(ctx context.Context, msg string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.Info(fields, message)
+		logrus.WithField("Fields", data).Info(msg)
 		return
 	}
-	logger.logger.WithFields(logrus.Fields(fields)).Info(message)
+	logger.logger.WithField("Fields", data).Info(msg)
 }
 
 // Warn 全局方式调用Warn函数
-func Warn(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
+func Warn(ctx context.Context, msg string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.Warn(fields, message)
+		logrus.WithField("Fields", data).Warn(msg)
 		return
 	}
-	logger.logger.WithFields(logrus.Fields(fields)).Warn(message)
+	logger.logger.WithField("Fields", data).Warn(msg)
 }
 
 // Error 全局方式调用Error函数
-func Error(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
+func Error(ctx context.Context, msg string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.Error(fields, message)
+		logrus.WithField("Fields", data).Error(msg)
 		return
 	}
-	logger.logger.WithFields(logrus.Fields(fields)).Error(message)
+	logger.logger.WithField("Fields", data).Error(msg)
 }
 
 // Fatal 全局方式调用Fatal函数
-func Fatal(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
+func Fatal(ctx context.Context, msg string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.Fatal(fields, message)
+		logrus.WithField("Fields", data).Fatal(msg)
 		return
 	}
-	logger.logger.WithFields(logrus.Fields(fields)).Fatal(message)
+	logger.logger.WithField("Fields", data).Fatal(msg)
 }
 
 // Panic 全局方式调用Panic函数
-func Panic(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
+func Panic(ctx context.Context, msg string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.Panic(fields, message)
+		logrus.WithField("Fields", data).Panic(msg)
 		return
 	}
-	logger.logger.WithFields(logrus.Fields(fields)).Panic(message)
+	logger.logger.WithField("Fields", data).Panic(msg)
 }
 
 // Trace 全局方式调用Trace函数
-func Trace(fields Fields, message string) {
-	if fields == nil {
-		fields = Fields{}
-	}
+func Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+	sql, rows := fc()
 	if logger.logger == nil {
-		logrus.Trace(fields, message)
-		return
+		logrus.WithFields(logrus.Fields{"sql": sql, "rows": rows}).Trace(err)
 	}
-	logger.logger.WithFields(logrus.Fields(fields)).Trace(message)
+	logger.logger.WithFields(logrus.Fields{"sql": sql, "rows": rows}).Trace(err)
 }
