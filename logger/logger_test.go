@@ -12,13 +12,14 @@ func TestNew(t *testing.T) {
 		LogType:      "json",
 		MaxAge:       time.Duration(180) * time.Second,
 		RotationTime: time.Duration(60) * time.Second,
+		PrettyPrint:  false,
 	})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 	for {
-		logger.Debug(nil, "测试消息", Fields{"name": "wjl", "age": 24})
+		logger.Debug("测试消息", Fields{"name": "wjl"})
 		time.Sleep(time.Duration(2) * time.Second)
 	}
 }

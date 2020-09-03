@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"context"
 	"fmt"
 	"path/filepath"
 	"time"
@@ -17,7 +16,7 @@ type Option struct {
 	LogType      string        // 日志类型: json, text
 	MaxAge       time.Duration // 日志文件清理前的最长保存时间
 	RotationTime time.Duration // 日志文件多长时间清理(切割)一次
-	PrettyPrint  bool          // 是否美化输出
+	PrettyPrint  bool          // 美化输出
 }
 
 // Logger 日志结构体
@@ -33,26 +32,14 @@ type LogLevel uint32
 
 // 日志级别枚举
 const (
-	PanicLevel LogLevel = iota
+	TraceLevel LogLevel = iota
+	PanicLevel
 	FatalLevel
 	ErrorLevel
 	WarnLevel
 	InfoLevel
 	DebugLevel
-	TraceLevel
 )
-
-// Interface 和Gorm 2.0集成
-type Interface interface {
-	LogMode(LogLevel) Interface
-	Debug(context.Context, string, ...interface{})
-	Info(context.Context, string, ...interface{})
-	Warn(context.Context, string, ...interface{})
-	Error(context.Context, string, ...interface{})
-	Fatal(context.Context, string, ...interface{})
-	Panic(context.Context, string, ...interface{})
-	Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error)
-}
 
 // 默认选项
 const (
@@ -71,7 +58,7 @@ func GetLogger() *Logger {
 }
 
 // New 产生新的logger
-func New(option *Option) (Interface, error) {
+func New(option *Option) (*Logger, error) {
 	logrusLogger := logrus.New()
 	// 设置日志格式
 	switch option.LogType {
@@ -108,120 +95,100 @@ func New(option *Option) (Interface, error) {
 	return logger, nil
 }
 
-// LogMode gorm 2.0 会用到这个函数来设置日志器的日志级别
-func (l *Logger) LogMode(level LogLevel) Interface {
-	newlogger := *l
-	newlogger.logger.SetLevel(logrus.Level(level))
-	return &newlogger
-}
-
 // Debug 打印Debug日志
-func (l *Logger) Debug(ctx context.Context, msg string, data ...interface{}) {
-	if l.logger.Level >= logrus.Level(DebugLevel) {
-		l.logger.WithField("Fields", data).Debug(msg)
-	}
+func (l *Logger) Debug(message string, data ...interface{}) {
+	l.logger.WithField("Fields", data).Debug(message)
 }
 
 // Info 打印Info日志
-func (l *Logger) Info(ctx context.Context, msg string, data ...interface{}) {
-	if l.logger.Level >= logrus.Level(InfoLevel) {
-		l.logger.WithField("Fields", data).Info(msg)
-	}
+func (l *Logger) Info(message string, data ...interface{}) {
+	l.logger.WithField("Fields", data).Info(message)
 }
 
 // Warn 打印Warn日志
-func (l *Logger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	if l.logger.Level >= logrus.Level(WarnLevel) {
-		l.logger.WithField("Fields", data).Warn(msg)
-	}
+func (l *Logger) Warn(message string, data ...interface{}) {
+	l.logger.WithField("Fields", data).Warn(message)
 }
 
 // Error 打印Error日志
-func (l *Logger) Error(ctx context.Context, msg string, data ...interface{}) {
-	if l.logger.Level >= logrus.Level(ErrorLevel) {
-		l.logger.WithField("Fields", data).Error(msg)
-	}
+func (l *Logger) Error(message string, data ...interface{}) {
+	l.logger.WithField("Fields", data).Error(message)
 }
 
 // Fatal 打印Fatal日志
-func (l *Logger) Fatal(ctx context.Context, msg string, data ...interface{}) {
-	if l.logger.Level >= logrus.Level(FatalLevel) {
-		l.logger.WithField("Fields", data).Fatal(msg)
-	}
+func (l *Logger) Fatal(message string, data ...interface{}) {
+	l.logger.WithField("Fields", data).Fatal(message)
 }
 
 // Panic 打印Panic日志
-func (l *Logger) Panic(ctx context.Context, msg string, data ...interface{}) {
-	if l.logger.Level >= logrus.Level(PanicLevel) {
-		l.logger.WithField("Fields", data).Panic(msg)
-	}
+func (l *Logger) Panic(message string, data ...interface{}) {
+	l.logger.WithField("Fields", data).Panic(message)
 }
 
 // Trace 打印Trace日志
-func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	sql, rows := fc()
-	l.logger.WithFields(logrus.Fields{"sql": sql, "rows": rows}).Trace(err)
+func (l *Logger) Trace(err error, data ...interface{}) {
+	l.logger.WithField("Fields", data).Trace(err)
 }
 
 // Debug 全局方式调用Debug函数
-func Debug(ctx context.Context, msg string, data ...interface{}) {
+func Debug(message string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.WithField("Fields", data).Debug(msg)
+		logrus.WithField("Fields", data).Debug(message)
 		return
 	}
-	logger.logger.WithField("Fields", data).Debug(msg)
+	logger.logger.WithField("Fields", data).Debug(message)
 }
 
 // Info 全局方式调用Info函数
-func Info(ctx context.Context, msg string, data ...interface{}) {
+func Info(message string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.WithField("Fields", data).Info(msg)
+		logrus.WithField("Fields", data).Info(message)
 		return
 	}
-	logger.logger.WithField("Fields", data).Info(msg)
+	logger.logger.WithField("Fields", data).Info(message)
 }
 
 // Warn 全局方式调用Warn函数
-func Warn(ctx context.Context, msg string, data ...interface{}) {
+func Warn(message string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.WithField("Fields", data).Warn(msg)
+		logrus.WithField("Fields", data).Warn(message)
 		return
 	}
-	logger.logger.WithField("Fields", data).Warn(msg)
+	logger.logger.WithField("Fields", data).Warn(message)
 }
 
 // Error 全局方式调用Error函数
-func Error(ctx context.Context, msg string, data ...interface{}) {
+func Error(message string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.WithField("Fields", data).Error(msg)
+		logrus.WithField("Fields", data).Error(message)
 		return
 	}
-	logger.logger.WithField("Fields", data).Error(msg)
+	logger.logger.WithField("Fields", data).Error(message)
 }
 
 // Fatal 全局方式调用Fatal函数
-func Fatal(ctx context.Context, msg string, data ...interface{}) {
+func Fatal(message string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.WithField("Fields", data).Fatal(msg)
+		logrus.WithField("Fields", data).Fatal(message)
 		return
 	}
-	logger.logger.WithField("Fields", data).Fatal(msg)
+	logger.logger.WithField("Fields", data).Fatal(message)
 }
 
 // Panic 全局方式调用Panic函数
-func Panic(ctx context.Context, msg string, data ...interface{}) {
+func Panic(message string, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.WithField("Fields", data).Panic(msg)
+		logrus.WithField("Fields", data).Panic(message)
 		return
 	}
-	logger.logger.WithField("Fields", data).Panic(msg)
+	logger.logger.WithField("Fields", data).Panic(message)
 }
 
 // Trace 全局方式调用Trace函数
-func Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	sql, rows := fc()
+func Trace(err error, data ...interface{}) {
 	if logger.logger == nil {
-		logrus.WithFields(logrus.Fields{"sql": sql, "rows": rows}).Trace(err)
+		logrus.WithField("Fields", data).Trace(err)
+		return
 	}
-	logger.logger.WithFields(logrus.Fields{"sql": sql, "rows": rows}).Trace(err)
+	logger.logger.WithField("Fields", data).Trace(err)
 }
