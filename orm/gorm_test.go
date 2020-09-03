@@ -1,23 +1,21 @@
 package orm
 
-import "testing"
+import (
+	"testing"
+
+	"gorm.io/gorm/logger"
+)
 
 func TestNewDB(t *testing.T) {
-	db := GetInstance()
-	if db == nil {
-		var err error
-		db, err = NewInstance(&OptionStat{
-			DBDriver:   Sqlite,
-			DataSource: "test.db",
-			LogMode:    true,
-		})
-		if err != nil {
-			t.Error(err)
-			return
-		}
-	}
-	if err := db.Instance.DB().Ping(); err != nil {
+	db, err := GetInstance(&Option{
+		Driver:     "sqlite",
+		DataSource: "test.db",
+		LogMode:    true,
+		LogLevel:   logger.Info,
+	})
+	if err != nil {
 		t.Error(err)
+		return
 	}
 	db.Instance.AutoMigrate(&User{})
 	db.Instance.Create(&User{Name: "user1"})

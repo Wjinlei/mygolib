@@ -1,112 +1,113 @@
 package orm
 
+// +---------------------------------------------------------------------
+// | Description: gorm封装,包含日志记录功能
+// +---------------------------------------------------------------------
+// | Copyright (c) 2004-2020 护卫神(http://hws.com) All rights reserved.
+// +---------------------------------------------------------------------
+// | Author: Wjinlei <1976883731@qq.com>
+// +---------------------------------------------------------------------
+//
+//                  ___====-_  _-====___
+//             _--^^^#####/      \#####^^^--_
+//          _-^##########/ (    ) \##########^-_
+//         -############/  |\^^/|  \############-
+//       _/############/   (@::@)   \############\_
+//     /#############((     \  /     ))#############\
+//     -###############\    (oo)    /###############-
+//    -#################\  / VV \  /#################-
+//   -###################\/      \/###################-
+// _#/|##########/\######(   /\   )######/\##########|\#_
+// |/ |#/\#/\#/\/  \#/\##\  |  |  /##/\#/  \/\#/\#/\#| \|
+// '  |/  V  V      V  \#\| |  | |/#/  V      V  V  \|  '
+//    '   '  '      '   / | |  | | \   '      '  '   '
+//                     (  | |  | |  )
+//                    __\ | |  | | /__
+//                   (vvv(VVV)(VVV)vvv)
+//
+//                  神龙护体
+//                代码无bug!
+
 import (
 	"errors"
+	"fmt"
+	"log"
+	"path/filepath"
 	"time"
 
-	"github.com/Wjinlei/mygolib/logger"
-	"github.com/jinzhu/gorm"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-// OptionStat 选项
-type OptionStat struct {
-	DBDriver   Driver
+// Option 选项
+type Option struct {
+	Driver     string // sqlite
 	DataSource string
 	LogMode    bool
-	Logger     *logger.Logger
+	LogLevel   logger.LogLevel // 如果不传,默认为Silent(不记录日志)
 }
 
-// Driver 驱动类型
-type Driver string
-
-const (
-	// Sqlite sqlite 驱动名定义
-	Sqlite Driver = "sqlite3"
-)
-
-// DBStat gorm.DB实例
-type DBStat struct {
+// DB gorm.DB实例
+type DB struct {
 	Instance *gorm.DB
 }
 
 var (
-	globalDB *DBStat
-	dbOption *OptionStat
-	mylogger *logger.Logger
+	dbInstance *DB
+	dbLogger   logger.Interface
 )
 
-// CustomLogger 自定义日志器
-type CustomLogger struct{}
-
-// Print 打印日志
-func (*CustomLogger) Print(v ...interface{}) {
-	switch v[0] {
-	case "sql":
-		mylogger.Debug(logger.Fields{
-			"module":   "gorm",
-			"type":     "sql",
-			"file":     v[1], // sql代码行号
-			"duration": v[2], // sql执行时间戳
-			"sql":      v[3], // sql语句
-			"values":   v[4], // sql数据
-			"rows":     v[5], // sql影响的行数
-		}, "sql日志")
-	case "log":
-		mylogger.Debug(logger.Fields{
-			"module":   "gorm",
-			"type":     "log",
-			"duration": v[2],
-		}, "普通日志")
-	}
-}
-
 // GetInstance 获取实例
-func GetInstance() *DBStat {
-	return globalDB
-}
-
-// NewInstance 产生新的实例
-func NewInstance(dbOption *OptionStat) (*DBStat, error) {
-	if globalDB == nil {
+func GetInstance(dbOption *Option) (*DB, error) {
+	if dbInstance == nil {
 		if dbOption == nil {
 			return nil, errors.New("Option is nil")
 		}
 		if dbOption.LogMode == true {
-			if dbOption.Logger == nil {
-				newLogger, err := logger.New(&logger.Option{
-					LogPath:      "./log/db/db.log",
-					LogLevel:     logger.DebugLevel,
-					LogType:      "json",
-					MaxAge:       time.Duration(3*3600) * time.Second,
-					RotationTime: time.Duration(3600) * time.Second,
-				})
-				if err != nil {
-					return nil, err
-				}
-				mylogger = newLogger
-			} else {
-				mylogger = dbOption.Logger
-			}
-		}
-		if dbOption.DBDriver == Sqlite {
-			sqliteDB, err := newSqlite(dbOption)
+			filePath, err := filepath.Abs("log/db/db.log")
 			if err != nil {
 				return nil, err
 			}
-			return sqliteDB, nil
+			rotator, err := rotatelogs.New(
+				fmt.Sprintf("%s-%s", filePath, "%Y%m%d%H%M"),
+				rotatelogs.WithLinkName(filePath),
+				rotatelogs.WithMaxAge(time.Duration(3*3600)*time.Second),     // 日志文件清理前的最长保存时间
+				rotatelogs.WithRotationTime(time.Duration(3600)*time.Second), // 多久滚动一次
+			)
+			if err != nil {
+				return nil, err
+			}
+			newLogger := logger.New(
+				log.New(rotator, "\r\n", log.LstdFlags), // io writer
+				logger.Config{
+					SlowThreshold: time.Second,       // 慢 SQL 阈值
+					LogLevel:      dbOption.LogLevel, // Log level
+					Colorful:      false,             // 禁用彩色打印
+				},
+			)
+			dbLogger = newLogger
+		}
+		if dbOption.Driver == "sqlite" {
+			db, err := newSqlite(dbOption)
+			if err != nil {
+				return nil, err
+			}
+			return db, nil
 		}
 	}
-	return globalDB, nil
+	return dbInstance, nil
 }
 
-// 产生sqlite实例
-func newSqlite(dbOption *OptionStat) (*DBStat, error) {
-	sqliteDB, err := gorm.Open("sqlite3", dbOption.DataSource)
+// newSqlite 产生sqlite实例
+func newSqlite(dbOption *Option) (*DB, error) {
+	db, err := gorm.Open(sqlite.Open(dbOption.DataSource), &gorm.Config{
+		Logger: dbLogger,
+	})
 	if err != nil {
 		return nil, err
 	}
-	sqliteDB.SetLogger(&CustomLogger{})
-	sqliteDB.LogMode(dbOption.LogMode)
-	globalDB = &DBStat{Instance: sqliteDB}
-	return globalDB, nil
+	dbInstance = &DB{Instance: db}
+	return dbInstance, nil
 }

@@ -10,7 +10,6 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.16
-	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/jonboulle/clockwork v0.2.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.3.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.3 // indirect
@@ -20,4 +19,6 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/yeka/zip v0.0.0-20180914125537-d046722c6feb
+	gorm.io/driver/sqlite v1.1.1
+	gorm.io/gorm v1.20.0
 )
