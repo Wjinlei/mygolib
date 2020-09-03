@@ -6,21 +6,25 @@ import (
 
 	"github.com/Wjinlei/mygolib/logger"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+// OptionStat 选项
 type OptionStat struct {
 	DBDriver   Driver
 	DataSource string
 	LogMode    bool
+	Logger     *logger.Logger
 }
 
+// Driver 驱动类型
 type Driver string
 
 const (
+	// Sqlite sqlite 驱动名定义
 	Sqlite Driver = "sqlite3"
 )
 
+// DBStat gorm.DB实例
 type DBStat struct {
 	Instance *gorm.DB
 }
@@ -31,9 +35,10 @@ var (
 	mylogger *logger.Logger
 )
 
-// 自定义日志器
+// CustomLogger 自定义日志器
 type CustomLogger struct{}
 
+// Print 打印日志
 func (*CustomLogger) Print(v ...interface{}) {
 	switch v[0] {
 	case "sql":
@@ -55,28 +60,33 @@ func (*CustomLogger) Print(v ...interface{}) {
 	}
 }
 
+// GetInstance 获取实例
 func GetInstance() *DBStat {
 	return globalDB
 }
 
-// 产生新的实例
+// NewInstance 产生新的实例
 func NewInstance(dbOption *OptionStat) (*DBStat, error) {
 	if globalDB == nil {
 		if dbOption == nil {
 			return nil, errors.New("Option is nil")
 		}
 		if dbOption.LogMode == true {
-			newLogger, err := logger.New(&logger.Option{
-				LogPath:      "./log/db/db.log",
-				LogLevel:     logger.DebugLevel,
-				LogType:      "json",
-				MaxAge:       time.Duration(3*24*3600) * time.Second,
-				RotationTime: time.Duration(3600) * time.Second,
-			})
-			if err != nil {
-				return nil, err
+			if dbOption.Logger == nil {
+				newLogger, err := logger.New(&logger.Option{
+					LogPath:      "./log/db/db.log",
+					LogLevel:     logger.DebugLevel,
+					LogType:      "json",
+					MaxAge:       time.Duration(3*3600) * time.Second,
+					RotationTime: time.Duration(3600) * time.Second,
+				})
+				if err != nil {
+					return nil, err
+				}
+				mylogger = newLogger
+			} else {
+				mylogger = dbOption.Logger
 			}
-			mylogger = newLogger
 		}
 		if dbOption.DBDriver == Sqlite {
 			sqliteDB, err := newSqlite(dbOption)
