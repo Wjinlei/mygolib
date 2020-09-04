@@ -46,6 +46,7 @@ type Option struct {
 	Driver     string // sqlite
 	DataSource string
 	LogMode    bool
+	LogPath    string          // 日志文件路径
 	LogLevel   logger.LogLevel // 如果不传,默认为Silent(不记录日志)
 }
 
@@ -66,7 +67,10 @@ func GetInstance(dbOption *Option) (*DB, error) {
 			return nil, errors.New("Option is nil")
 		}
 		if dbOption.LogMode == true {
-			filePath, err := filepath.Abs("log/sql/sql.log")
+			if dbOption.LogPath == "" {
+				dbOption.LogPath = "log/sql/sql.log"
+			}
+			filePath, err := filepath.Abs(dbOption.LogPath)
 			if err != nil {
 				return nil, err
 			}
