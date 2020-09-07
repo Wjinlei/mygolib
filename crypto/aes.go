@@ -106,7 +106,7 @@ func AESDecrypt(str string, key string, encoding string) (decrypt string) {
 		string(bytes.Trim([]byte(decoder.ConvertString(string(decrypted[:trim]))),
 			"\x00")))
 	if decrypt == "" {
-		decrypt = str
+		decrypt = "解密错误"
 	}
 	return decrypt
 }
