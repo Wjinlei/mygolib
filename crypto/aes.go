@@ -41,7 +41,8 @@ import (
 func AESEncrypt(str string, key string, encoding string) (encrypt string) {
 	defer func() {
 		if err := recover(); err != nil {
-			encrypt = "加密错误 " + err.(error).Error()
+			// 如果加密错误就返回原字符串
+			encrypt = str
 		}
 	}()
 	encoder := mahonia.NewEncoder(encoding)
