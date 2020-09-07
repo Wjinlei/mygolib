@@ -80,10 +80,10 @@ func AESDecrypt(str string, key string, encoding string) (decrypt string) {
 			decrypt = "解密错误"
 		}
 	}()
-	encoder := mahonia.NewDecoder(encoding)
+	decoder := mahonia.NewDecoder(encoding)
 	byteKey := make([]byte, 16)
 	// key 只取16位
-	copy(byteKey, encoder.ConvertString(key))
+	copy(byteKey, decoder.ConvertString(key))
 	for i := 16; i < len(byteKey); {
 		for j := 0; j < 16 && i < len(byteKey); j, i = j+1, i+1 {
 			byteKey[j] ^= byteKey[i]
@@ -103,7 +103,10 @@ func AESDecrypt(str string, key string, encoding string) (decrypt string) {
 	}
 	// 去除两边多余的0,和多余的空格
 	decrypt = strings.TrimSpace(
-		string(bytes.Trim([]byte(encoder.ConvertString(string(decrypted[:trim]))),
+		string(bytes.Trim([]byte(decoder.ConvertString(string(decrypted[:trim]))),
 			"\x00")))
+	if decrypt == "" {
+		decrypt = str
+	}
 	return decrypt
 }
