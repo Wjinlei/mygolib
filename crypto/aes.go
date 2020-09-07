@@ -1,18 +1,47 @@
 package crypto
 
+// +---------------------------------------------------------------------
+// | Description: AES加解密
+// +---------------------------------------------------------------------
+// | Copyright (c) 2004-2020 护卫神(http://hws.com) All rights reserved.
+// +---------------------------------------------------------------------
+// | Author: Wjinlei <1976883731@qq.com>
+// +---------------------------------------------------------------------
+//
+//                  ___====-_  _-====___
+//             _--^^^#####/      \#####^^^--_
+//          _-^##########/ (    ) \##########^-_
+//         -############/  |\^^/|  \############-
+//       _/############/   (@::@)   \############\_
+//     /#############((     \  /     ))#############\
+//     -###############\    (oo)    /###############-
+//    -#################\  / VV \  /#################-
+//   -###################\/      \/###################-
+// _#/|##########/\######(   /\   )######/\##########|\#_
+// |/ |#/\#/\#/\/  \#/\##\  |  |  /##/\#/  \/\#/\#/\#| \|
+// '  |/  V  V      V  \#\| |  | |/#/  V      V  V  \|  '
+//    '   '  '      '   / | |  | | \   '      '  '   '
+//                     (  | |  | |  )
+//                    __\ | |  | | /__
+//                   (vvv(VVV)(VVV)vvv)
+//
+//                  神龙护体
+//                代码无bug!
+
 import (
 	"bytes"
 	"crypto/aes"
 	"encoding/hex"
-	"github.com/axgle/mahonia"
 	"strings"
+
+	"github.com/axgle/mahonia"
 )
 
-// AES ECB 模式加密
+// AESEncrypt AES ECB 模式加密
 func AESEncrypt(str string, key string, encoding string) (encrypt string) {
 	defer func() {
 		if err := recover(); err != nil {
-			encrypt = ""
+			encrypt = "加密错误 " + err.(error).Error()
 		}
 	}()
 	encoder := mahonia.NewEncoder(encoding)
@@ -20,7 +49,6 @@ func AESEncrypt(str string, key string, encoding string) (encrypt string) {
 	byteKey := make([]byte, 16)
 	// key 只取16位
 	copy(byteKey, encoder.ConvertString(key))
-
 	for i := 16; i < len(byteKey); {
 		for j := 0; j < 16 && i < len(byteKey); j, i = j+1, i+1 {
 			byteKey[j] ^= byteKey[i]
@@ -44,11 +72,11 @@ func AESEncrypt(str string, key string, encoding string) (encrypt string) {
 	return encrypt
 }
 
-// AES ECB 模式解密
+// AESDecrypt AES ECB 模式解密
 func AESDecrypt(str string, key string, encoding string) (decrypt string) {
 	defer func() {
 		if err := recover(); err != nil {
-			decrypt = ""
+			decrypt = "解密错误 " + err.(error).Error()
 		}
 	}()
 	encoder := mahonia.NewDecoder(encoding)
