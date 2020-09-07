@@ -77,7 +77,7 @@ func AESEncrypt(str string, key string, encoding string) (encrypt string) {
 func AESDecrypt(str string, key string, encoding string) (decrypt string) {
 	defer func() {
 		if err := recover(); err != nil {
-			decrypt = "解密错误 " + err.(error).Error()
+			decrypt = "解密错误"
 		}
 	}()
 	encoder := mahonia.NewDecoder(encoding)
@@ -105,5 +105,9 @@ func AESDecrypt(str string, key string, encoding string) (decrypt string) {
 	decrypt = strings.TrimSpace(
 		string(bytes.Trim([]byte(encoder.ConvertString(string(decrypted[:trim]))),
 			"\x00")))
+
+	if decrypt == "" {
+		decrypt = "解密错误"
+	}
 	return decrypt
 }
