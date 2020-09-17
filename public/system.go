@@ -56,9 +56,9 @@ func HostDev(combineWith ...string) string {
 	return GetEnv("HOST_DEV", "/dev", combineWith...)
 }
 
-// getSysctrlEnv sets LC_ALL=C in a list of env vars for use when running
+// GetSysctrlEnv sets LC_ALL=C in a list of env vars for use when running
 // sysctl commands (see DoSysctrl).
-func getSysctrlEnv(env []string) []string {
+func GetSysctrlEnv(env []string) []string {
 	foundLC := false
 	for i, line := range env {
 		if strings.HasPrefix(line, "LC_ALL") {
