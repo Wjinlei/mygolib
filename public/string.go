@@ -41,8 +41,10 @@ func Uint64ToKBMBGB(value uint64) string {
 		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)/float64(1024)) + "(GB)"
 	} else if value > 1048576 {
 		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)) + "(MB)"
+	} else if value > 1024 {
+		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)) + "(KB)"
 	} else {
-		retStr = fmt.Sprintf("%.2f", float64(value)) + "(KB)"
+		retStr = fmt.Sprintf("%.2f", float64(value)) + "(B)"
 	}
 	return retStr
 }
