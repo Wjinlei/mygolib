@@ -5,6 +5,12 @@ import (
 	"testing"
 )
 
+func TestDownloadFile(t *testing.T) {
+	if err := DownloadFile("http://d.hws.com/linux/master/script/install.sh", "./install.sh"); err != nil {
+		t.Error(err)
+	}
+}
+
 func TestWriteFile(t *testing.T) {
 	if err := WriteFile("./testfile1.txt", "TestWriteFile"); err != nil {
 		t.Error(err)

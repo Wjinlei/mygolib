@@ -2,10 +2,33 @@ package mypublic
 
 import (
 	"bufio"
+	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"strings"
 )
+
+// DownloadFile 下载文件
+func DownloadFile(url string, path string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	// 目标文件
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	// 保存响应数据到文件
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // WriteFile 写入字符串到文件
 func WriteFile(filepath string, content string) error {
