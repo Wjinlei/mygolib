@@ -1,4 +1,4 @@
-package xml
+package myxml
 
 import (
 	"strconv"
