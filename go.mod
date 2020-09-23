@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
+	github.com/beevik/etree v1.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
