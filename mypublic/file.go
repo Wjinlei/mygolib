@@ -30,6 +30,30 @@ func DownloadFile(url string, path string) error {
 	return nil
 }
 
+// DeleteFile 删除文件,如果是一个目录,那只能删除空目录
+func DeleteFile(path string) error {
+	if err := os.Remove(path); err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteFileAll 删除文件,如果是一个目录,则会删除该目录及其内部所有
+func DeleteFileAll(path string) error {
+	if err := os.RemoveAll(path); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MoveFile 移动或重命名文件
+func MoveFile(oldpath string, newpath string) error {
+	if err := os.Rename(oldpath, newpath); err != nil {
+		return err
+	}
+	return nil
+}
+
 // WriteFile 写入字符串到文件
 func WriteFile(filepath string, content string) error {
 	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -75,12 +99,4 @@ func ReadLinesOffsetN(filename string, offset uint, n int) ([]string, error) {
 		ret = append(ret, strings.Trim(line, "\n"))
 	}
 	return ret, nil
-}
-
-// MoveFile 移动或重命名文件
-func MoveFile(oldpath string, newpath string) error {
-	if err := os.Rename(oldpath, newpath); err != nil {
-		return err
-	}
-	return nil
 }
