@@ -36,6 +36,7 @@ import (
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -100,6 +101,13 @@ func GetInstance(dbOption *Option) (*DB, error) {
 			}
 			return db, nil
 		}
+		if dbOption.Driver == "mysql" {
+			db, err := newMySQL(dbOption)
+			if err != nil {
+				return nil, err
+			}
+			return db, nil
+		}
 	}
 	return dbInstance, nil
 }
@@ -114,6 +122,18 @@ func newSqlite(dbOption *Option) (*DB, error) {
 	}
 	result := db.Exec("PRAGMA foreign_keys = ON")
 	if result.Error != nil {
+		return nil, err
+	}
+	dbInstance = &DB{Instance: db}
+	return dbInstance, nil
+}
+
+// newMySQL 产生MySQL实例
+func newMySQL(dbOption *Option) (*DB, error) {
+	db, err := gorm.Open(mysql.Open(dbOption.DataSource), &gorm.Config{
+		Logger: dbLogger,
+	})
+	if err != nil {
 		return nil, err
 	}
 	dbInstance = &DB{Instance: db}

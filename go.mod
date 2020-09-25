@@ -20,6 +20,7 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/yeka/zip v0.0.0-20180914125537-d046722c6feb
+	gorm.io/driver/mysql v1.0.1
 	gorm.io/driver/sqlite v1.1.1
 	gorm.io/gorm v1.20.0
 )
