@@ -11,6 +11,7 @@ func TestGetInstanceForSqlite(t *testing.T) {
 		Driver:     "sqlite",
 		DataSource: "test.db",
 		LogMode:    true,
+		LogPath:    "log/sql/sqlite.log",
 		LogLevel:   logger.Info,
 	})
 	if err != nil {
@@ -27,6 +28,7 @@ func TestGetInstanceForMySQL(t *testing.T) {
 		Driver:     "mysql",
 		DataSource: "root:8bff67819a3c2b83@tcp(192.168.2.126:3306)/",
 		LogMode:    true,
+		LogPath:    "log/sql/mysql.log",
 		LogLevel:   logger.Info,
 	})
 	if err != nil {
