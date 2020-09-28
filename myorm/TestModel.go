@@ -4,8 +4,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// User 测试User Model
-type User struct {
+// TestModel 测试Model
+type TestModel struct {
 	gorm.Model
 	Name string
 }
