@@ -17,7 +17,8 @@ func NewMySQL(option *Option) (*DB, error) {
 		if err != nil {
 			return nil, err
 		}
-		db, err := gorm.Open(mysql.Open(option.DataSource), &gorm.Config{Logger: dbLogger})
+		db, err := gorm.Open(mysql.Open(option.DataSource),
+			&gorm.Config{Logger: dbLogger})
 		if err != nil {
 			return nil, err
 		}

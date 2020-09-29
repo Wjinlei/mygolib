@@ -30,6 +30,7 @@ func newLogger(option *Option) (logger.Interface, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rotator.Close()
 	// 产生新的日志器对象
 	newLogger := logger.New(
 		log.New(rotator, "\r\n", log.LstdFlags),
