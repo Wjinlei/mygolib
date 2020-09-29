@@ -12,7 +12,7 @@ require (
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jonboulle/clockwork v0.2.0 // indirect
-	github.com/lestrrat-go/file-rotatelogs v2.3.0+incompatible
+	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.3 // indirect
 	github.com/miolini/gopunycode v0.0.0-20140314124308-54c20e4dd271
 	github.com/pkg/errors v0.9.1 // indirect
@@ -21,6 +21,6 @@ require (
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/yeka/zip v0.0.0-20180914125537-d046722c6feb
 	gorm.io/driver/mysql v1.0.1
-	gorm.io/driver/sqlite v1.1.1
-	gorm.io/gorm v1.20.0
+	gorm.io/driver/sqlite v1.1.3
+	gorm.io/gorm v1.20.2
 )
