@@ -29,6 +29,7 @@ package myorm
 //                代码无bug!
 
 import (
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -45,3 +46,10 @@ type Option struct {
 type DB struct {
 	Instance *gorm.DB
 }
+
+var (
+	err error
+
+	sqliteRotator *rotatelogs.RotateLogs // sqlite 全局日志切割器
+	mysqlRotator  *rotatelogs.RotateLogs // mysql 全局日志切割器
+)

@@ -13,12 +13,18 @@ func NewSqlite(option *Option) (*DB, error) {
 		return nil, fmt.Errorf("[ERROR]: Option is nil")
 	}
 	if option.LogMode == true {
-		dbLogger, err := newLogger(option)
+		if sqliteRotator == nil {
+			sqliteRotator, err = newRotator(option.LogPath)
+			if err != nil {
+				return nil, err
+			}
+		}
+		sqliteLogger, err := newLogger(option.LogLevel, sqliteRotator)
 		if err != nil {
 			return nil, err
 		}
 		db, err := gorm.Open(sqlite.Open(option.DataSource),
-			&gorm.Config{Logger: dbLogger})
+			&gorm.Config{Logger: sqliteLogger})
 		if err != nil {
 			return nil, err
 		}

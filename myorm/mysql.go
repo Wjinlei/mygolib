@@ -13,12 +13,18 @@ func NewMySQL(option *Option) (*DB, error) {
 		return nil, fmt.Errorf("[ERROR]: Option is nil")
 	}
 	if option.LogMode == true {
-		dbLogger, err := newLogger(option)
+		if mysqlRotator == nil {
+			mysqlRotator, err = newRotator(option.LogPath)
+			if err != nil {
+				return nil, err
+			}
+		}
+		mysqlLogger, err := newLogger(option.LogLevel, mysqlRotator)
 		if err != nil {
 			return nil, err
 		}
 		db, err := gorm.Open(mysql.Open(option.DataSource),
-			&gorm.Config{Logger: dbLogger})
+			&gorm.Config{Logger: mysqlLogger})
 		if err != nil {
 			return nil, err
 		}
