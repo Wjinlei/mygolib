@@ -75,6 +75,9 @@ func AESEncrypt(str string, key string, encoding string) (encrypt string) {
 
 // AESDecrypt AES ECB 模式解密
 func AESDecrypt(str string, key string, encoding string) (decrypt string) {
+	if str == "" {
+		return str
+	}
 	defer func() {
 		if err := recover(); err != nil {
 			decrypt = "解密错误"
