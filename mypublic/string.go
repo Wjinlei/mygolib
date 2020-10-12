@@ -2,6 +2,7 @@ package mypublic
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -60,4 +61,12 @@ func Float64ToKBMBGB(value float64) string {
 		retStr = fmt.Sprintf("%.2f", value) + "(KB)"
 	}
 	return retStr
+}
+
+func Atoi(s string) int {
+	sInt, err := strconv.Atoi(s)
+	if err != nil {
+		return 0
+	}
+	return sInt
 }
