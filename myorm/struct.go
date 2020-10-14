@@ -29,6 +29,8 @@ package myorm
 //                代码无bug!
 
 import (
+	"database/sql"
+
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -45,6 +47,7 @@ type Option struct {
 // DB gorm.DB实例
 type DB struct {
 	Instance *gorm.DB
+	Conn     *sql.DB
 }
 
 var (

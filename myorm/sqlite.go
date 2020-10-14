@@ -31,7 +31,11 @@ func NewSqlite(option *Option) (*DB, error) {
 		if err := openForeginKey(db); err != nil {
 			return nil, err
 		}
-		return &DB{Instance: db}, nil
+		conn, err := db.DB()
+		if err != nil {
+			return nil, err
+		}
+		return &DB{Instance: db, Conn: conn}, nil
 	}
 	db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{})
 	if err != nil {
@@ -40,7 +44,11 @@ func NewSqlite(option *Option) (*DB, error) {
 	if err := openForeginKey(db); err != nil {
 		return nil, err
 	}
-	return &DB{Instance: db}, nil
+	conn, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	return &DB{Instance: db, Conn: conn}, nil
 }
 
 // openForeginKey 打开Sqlite3外键支持

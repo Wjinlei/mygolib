@@ -28,11 +28,19 @@ func NewMySQL(option *Option) (*DB, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &DB{Instance: db}, nil
+		conn, err := db.DB()
+		if err != nil {
+			return nil, err
+		}
+		return &DB{Instance: db, Conn: conn}, nil
 	}
 	db, err := gorm.Open(mysql.Open(option.DataSource), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	return &DB{Instance: db}, nil
+	conn, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	return &DB{Instance: db, Conn: conn}, nil
 }
