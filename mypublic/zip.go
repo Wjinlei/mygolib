@@ -15,10 +15,7 @@ import (
 // ZIP 不加密压缩
 func ZIP(srcpath, destpath, encoding string) error {
 	// 判断传入的源路径是否是目录
-	ok, err := IsDir(srcpath)
-	if err != nil {
-		return err
-	}
+	ok := IsDir(srcpath)
 	if !ok {
 		// 文件
 		if err := ZIPFile(srcpath, destpath, encoding); err != nil {

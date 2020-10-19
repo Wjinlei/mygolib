@@ -2,8 +2,8 @@ package mypublic
 
 import "testing"
 
-func TestPathExists(t *testing.T) {
-	if ok := PathExists("./utils.go"); !ok {
+func TestExists(t *testing.T) {
+	if ok := Exists("./utils.go"); !ok {
 		t.Error("TestExists failed")
 	}
 }
