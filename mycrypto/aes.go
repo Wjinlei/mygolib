@@ -29,7 +29,6 @@ package mycrypto
 //                代码无bug!
 
 import (
-	"bytes"
 	"crypto/aes"
 	"encoding/hex"
 	"strings"
@@ -38,78 +37,58 @@ import (
 )
 
 // AESEncrypt AES ECB 模式加密
-func AESEncrypt(str string, key string, encoding string) (encrypt string) {
+func AESEncrypt(decrypt string, key string, encoding string) (encrypt string) {
+	blockSize := 16
+	enCoder := mahonia.NewEncoder(encoding)
 	defer func() {
 		if err := recover(); err != nil {
-			// 如果加密错误就返回原字符串
-			encrypt = str
+			encrypt = decrypt
 		}
 	}()
-	encoder := mahonia.NewEncoder(encoding)
-	byteStr := []byte(encoder.ConvertString(str))
-	byteKey := make([]byte, 16)
-	// key 只取16位
-	copy(byteKey, encoder.ConvertString(key))
-	for i := 16; i < len(byteKey); {
-		for j := 0; j < 16 && i < len(byteKey); j, i = j+1, i+1 {
-			byteKey[j] ^= byteKey[i]
-		}
+	keyByte := make([]byte, 16)
+	copy(keyByte, enCoder.ConvertString(key))
+	newCipher, err := aes.NewCipher(keyByte)
+	if err != nil {
+		return decrypt
 	}
-	cipher, _ := aes.NewCipher(byteKey)
-	length := (len(byteStr) + aes.BlockSize) / aes.BlockSize
-	plain := make([]byte, length*aes.BlockSize)
-	copy(plain, byteStr)
-	pad := byte(len(plain) - len(byteStr))
-	for i := len(byteStr); i < len(plain); i++ {
-		plain[i] = pad
+	decryptByte := []byte(enCoder.ConvertString(decrypt))
+	decryptLength := len(decryptByte)
+	plain := make([]byte, (len(decryptByte)+blockSize)/blockSize*blockSize)
+	plainLength := len(plain)
+	copy(plain, decryptByte)
+	padding := byte(plainLength - decryptLength)
+	for i := decryptLength; i < plainLength; i++ {
+		plain[i] = padding
 	}
-	encrypted := make([]byte, len(plain))
-	for bs, be := 0,
-		cipher.BlockSize(); bs <= len(byteStr); bs,
-		be = bs+cipher.BlockSize(), be+cipher.BlockSize() {
-		cipher.Encrypt(encrypted[bs:be], plain[bs:be])
+	encryptByte := make([]byte, plainLength)
+	for bs, be := 0, blockSize; bs <= decryptLength; bs, be = bs+blockSize, be+blockSize {
+		newCipher.Encrypt(encryptByte[bs:be], plain[bs:be])
 	}
-	encrypt = strings.TrimSpace(hex.EncodeToString(encrypted))
-	return encrypt
+	encrypt = strings.TrimSpace(hex.EncodeToString(encryptByte))
+	return encrypt // 如果加密失败,则返回原字符串
 }
 
 // AESDecrypt AES ECB 模式解密
-func AESDecrypt(str string, key string, encoding string) (decrypt string) {
-	if str == "" {
-		return str
-	}
+func AESDecrypt(encrypt string, key string, encoding string) (decrypt string) {
+	blockSize := 16
+	deCoder := mahonia.NewDecoder(encoding)
 	defer func() {
 		if err := recover(); err != nil {
 			decrypt = "解密错误"
 		}
 	}()
-	decoder := mahonia.NewDecoder(encoding)
-	byteKey := make([]byte, 16)
-	// key 只取16位
-	copy(byteKey, decoder.ConvertString(key))
-	for i := 16; i < len(byteKey); {
-		for j := 0; j < 16 && i < len(byteKey); j, i = j+1, i+1 {
-			byteKey[j] ^= byteKey[i]
-		}
+	keyByte := make([]byte, 16)
+	copy(keyByte, deCoder.ConvertString(key))
+	newCipher, err := aes.NewCipher(keyByte)
+	if err != nil {
+		return "解密错误"
 	}
-	decodeString, _ := hex.DecodeString(str)
-	cipher, _ := aes.NewCipher(byteKey)
-	decrypted := make([]byte, len(decodeString))
-	for bs, be := 0,
-		cipher.BlockSize(); bs < len(decodeString); bs, be = bs+cipher.BlockSize(),
-		be+cipher.BlockSize() {
-		cipher.Decrypt(decrypted[bs:be], decodeString[bs:be])
+	encryptByte, _ := hex.DecodeString(encrypt)
+	encryptByteLength := len(encryptByte)
+	decryptByte := make([]byte, encryptByteLength)
+	for bs, be := 0, blockSize; bs < encryptByteLength; bs, be = bs+blockSize, be+blockSize {
+		newCipher.Decrypt(decryptByte[bs:be], encryptByte[bs:be])
 	}
-	trim := 0
-	if len(decrypted) > 0 {
-		trim = len(decrypted) - int(decrypted[len(decrypted)-1])
-	}
-	// 去除两边多余的0,和多余的空格
-	decrypt = strings.TrimSpace(
-		string(bytes.Trim([]byte(decoder.ConvertString(string(decrypted[:trim]))),
-			"\x00")))
-	if decrypt == "" {
-		decrypt = "解密错误"
-	}
-	return decrypt
+	decrypt = deCoder.ConvertString(string(decryptByte))
+	return decrypt // 返回的结果,不能用 == 判断是否相等,因为[]byte可能并不相同
 }
