@@ -29,6 +29,7 @@ package mycrypto
 //                代码无bug!
 
 import (
+	"bytes"
 	"crypto/aes"
 	"encoding/hex"
 	"strings"
@@ -89,6 +90,6 @@ func AESDecrypt(encrypt string, key string, encoding string) (decrypt string) {
 	for bs, be := 0, blockSize; bs < encryptByteLength; bs, be = bs+blockSize, be+blockSize {
 		newCipher.Decrypt(decryptByte[bs:be], encryptByte[bs:be])
 	}
-	decrypt = strings.TrimSpace(deCoder.ConvertString(string(decryptByte)))
+	decrypt = strings.TrimSpace(string(bytes.Trim([]byte(deCoder.ConvertString(string(decryptByte))), "\x00")))
 	return decrypt // 返回的结果,不能用 == 判断是否相等,因为[]byte可能并不相同
 }
