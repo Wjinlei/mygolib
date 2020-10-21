@@ -1,38 +1,75 @@
 package mycrypto
 
 import (
-	"encoding/hex"
 	"fmt"
+	"io/ioutil"
 	"testing"
 )
 
-func TestAESEncrypt(t *testing.T) {
-	err := SetAesKey("123", 16) // 可以指定密钥的长度, 16, 24, 32, 不足为会自动填充0
+// TestEncodeStringAesECBEncryptToHex 将字符串转换为指定编码,再进行AES ECB模式加密,最后编码为十六进制字符串
+func TestEncodeStringAesECBEncryptToHex(t *testing.T) {
+	encrypt, err := EncodeStringAesECBEncryptToHex("Hello 中国!", "123", 16, "gbk")
 	if err != nil {
 		t.Error(err)
 	}
-	//ciphertext, err := AesECBEncrypt([]byte("Hello World!"), "ZeroPadding") // 还可以指定零填充
-	ciphertext, err := AesECBEncrypt([]byte("Hello World!")) // 默认采用PKCS5算法来Padding填充
-	if err != nil {
-		t.Error(err)
-	}
-	encrypt := hex.EncodeToString(ciphertext) // 如果要加密结果转为十六禁止,则需要编码
 	fmt.Println(encrypt)
 }
 
-func TestAesECBDecrypt(t *testing.T) {
-	err := SetAesKey("123", 16) // 可以指定密钥的长度, 16, 24, 32, 不足为会自动填充0
+// TestDecodeStringAesECBDecryptFromHex 从十六进制字符串进行AES ECB模式解密,然后解码为指定编码的字符串
+func TestDecodeStringAesECBDecryptFromHex(t *testing.T) {
+	decrypt, err := DecodeStringAesECBDecryptFromHex("24ece90186db56d04172f46b934f6e33", "123", 16, "gbk")
 	if err != nil {
 		t.Error(err)
 	}
-	decode, err := hex.DecodeString("69dd1d8bda910a5d547de96054a70542") // 如果密文是16进制编码,则需要解码
+	fmt.Println(decrypt)
+}
+
+// TestAesECBEncryptToHex 将数据进行AES ECB模式加密,然后编码为十六进制字符串(该方法不支持指定字符串编码)
+func TestAesECBEncryptToHex(t *testing.T) {
+	encrypt, err := AesECBEncryptToHex([]byte("Hello 中国!"), "123", 16)
 	if err != nil {
 		t.Error(err)
 	}
-	//ciphertext, err := AesECBDecrypt(decode, "ZeroUnPadding") // 还可以指定零反填充
-	ciphertext, err := AesECBDecrypt(decode) // 默认采用PKCS5算法来UnPadding填充
+	fmt.Println(encrypt)
+}
+
+// TestAesECBDecryptFromHex 将十六进制字符串进行AES ECB模式解密(该方法不支持指定编码)
+func TestAesECBDecryptFromHex(t *testing.T) {
+	decrypt, err := AesECBDecryptFromHex("c073f512e975de0ac675e4c2c3607020", "123", 16)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println(string(ciphertext))
+	fmt.Println(decrypt)
+}
+
+// TestAesECBEncrypt AES ECB模式加密[]byte类型数据,通常用于加密文件
+func TestAesECBEncrypt(t *testing.T) {
+	fileByte, err := ioutil.ReadFile("testfile.txt")
+	if err != nil {
+		t.Error(err)
+	}
+	data, err := AesECBEncrypt(fileByte, "123", 16)
+	if err != nil {
+		t.Error(err)
+	}
+	err = ioutil.WriteFile("testfile_encrypt.go", data, 0644)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+// TestAesEcbDecrypt AES ECB模式解密[]byte类型的数据,通常用于解密加密文件
+func TestAesEcbDecrypt(t *testing.T) {
+	fileByte, err := ioutil.ReadFile("testfile_encrypt.go")
+	if err != nil {
+		t.Error(err)
+	}
+	data, err := AesECBDecrypt(fileByte, "123", 16)
+	if err != nil {
+		t.Error(err)
+	}
+	err = ioutil.WriteFile("testfile_decrypt.go", data, 0644)
+	if err != nil {
+		t.Error(err)
+	}
 }
