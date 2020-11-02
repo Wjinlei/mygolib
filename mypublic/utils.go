@@ -49,3 +49,13 @@ func ContainsInt(s []int, e int) bool {
 	}
 	return false
 }
+
+// ContainsInt 判断元素是否存在于Slice中, Int类型
+func ContainsUInt(s []uint, e uint) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
