@@ -17,7 +17,17 @@ func ExecShell(command string) (string, error) {
 }
 
 // ExecScript 执行一个脚本
-func ExecScript(name string, params ...string) (string, error) {
+func ExecScript(params ...string) (string, error) {
+	cmd := exec.Command("bash", params...)
+	cmd.Env = GetSysctrlEnv(os.Environ())
+	out, err := cmd.Output()
+	if err != nil {
+		return string(out), err
+	}
+	return string(out), nil
+}
+
+func ExecCommand(name string, params ...string) (string, error) {
 	cmd := exec.Command(name, params...)
 	cmd.Env = GetSysctrlEnv(os.Environ())
 	out, err := cmd.Output()
