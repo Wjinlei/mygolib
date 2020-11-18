@@ -1,7 +1,6 @@
 package mypublic
 
 import (
-	"bytes"
 	"os"
 	"os/exec"
 )
@@ -28,24 +27,18 @@ func ExecScript(params ...string) (string, error) {
 	return string(out), nil
 }
 
-func RunCmd(name string, params ...string) (string, error) {
+func RunCmd(name string, params ...string) error {
 	cmd := exec.Command(name, params...)
-	var stderr, stdout bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return stderr.String(), err
+		return err
 	}
-	return stdout.String(), nil
+	return nil
 }
 
-func StartCmd(name string, params ...string) (string, error) {
+func StartCmd(name string, params ...string) error {
 	cmd := exec.Command(name, params...)
-	var stderr, stdout bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
 	if err := cmd.Start(); err != nil {
-		return stderr.String(), err
+		return err
 	}
-	return stdout.String(), nil
+	return nil
 }
