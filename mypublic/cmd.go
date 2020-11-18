@@ -9,7 +9,7 @@ import (
 func ExecShell(command string) (string, error) {
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Env = GetSysctrlEnv(os.Environ())
-	out, err := cmd.CombinedOutput()
+	out, err := cmd.Output()
 	if err != nil {
 		return string(out), err
 	}
@@ -20,7 +20,7 @@ func ExecShell(command string) (string, error) {
 func ExecScript(params ...string) (string, error) {
 	cmd := exec.Command("bash", params...)
 	cmd.Env = GetSysctrlEnv(os.Environ())
-	out, err := cmd.CombinedOutput()
+	out, err := cmd.Output()
 	if err != nil {
 		return string(out), err
 	}
