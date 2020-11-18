@@ -27,12 +27,12 @@ func ExecScript(params ...string) (string, error) {
 	return string(out), nil
 }
 
-func ExecCommand(name string, params ...string) (string, error) {
+func ExecCommand(name string, params ...string) error {
 	cmd := exec.Command(name, params...)
-	cmd.Env = GetSysctrlEnv(os.Environ())
-	out, err := cmd.Output()
-	if err != nil {
-		return string(out), err
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return err
 	}
-	return string(out), nil
+	return nil
 }
