@@ -1,8 +1,10 @@
 package mypublic
 
 import (
+	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 // MakeDir 创建目录
@@ -24,4 +26,18 @@ func MakeDirAll(filepath string) error {
 		}
 	}
 	return nil
+}
+
+func DirSize(path string) (int64, error) {
+	var size int64
+	if !Exists(path) {
+		return 0, fmt.Errorf("目录不存在")
+	}
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
 }
