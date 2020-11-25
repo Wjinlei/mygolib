@@ -134,18 +134,22 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		}
 		src, err := file.Open()
 		if err != nil {
+			src.Close()
 			return err
 		}
-		defer src.Close()
 		dest, err := os.Create(filepath)
 		if err != nil {
+			dest.Close()
 			return err
 		}
-		defer dest.Close()
 		_, err = io.Copy(dest, src)
 		if err != nil {
+			src.Close()
+			dest.Close()
 			return err
 		}
+		src.Close()
+		dest.Close()
 	}
 	return nil
 }
