@@ -29,6 +29,7 @@ func ExecScript(params ...string) (string, error) {
 
 func RunCmd(name string, params ...string) (string, error) {
 	cmd := exec.Command(name, params...)
+	cmd.Env = GetSysctrlEnv(os.Environ())
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return string(out), err
