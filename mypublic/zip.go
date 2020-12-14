@@ -122,15 +122,15 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	defer readCloser.Close()
 	destpath = strings.TrimRight(destpath, "/")
 	for _, file := range readCloser.File {
+		filepath := destpath + "/" + decoder.ConvertString(file.Name)
 		if file.FileInfo().IsDir() {
+			if err := MakeDir(filepath); err != nil {
+				return err
+			}
 			continue
 		}
 		if file.IsEncrypted() {
 			file.SetPassword(password)
-		}
-		filepath := destpath + "/" + decoder.ConvertString(file.Name)
-		if err := MakeDirAll(filepath); err != nil {
-			return err
 		}
 		src, err := file.Open()
 		if err != nil {
