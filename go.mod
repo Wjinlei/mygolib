@@ -15,6 +15,7 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.3 // indirect
 	github.com/miolini/gopunycode v0.0.0-20140314124308-54c20e4dd271
+	github.com/mozillazg/go-pinyin v0.18.0
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shirou/gopsutil v2.20.7+incompatible
 	github.com/sirupsen/logrus v1.6.0

@@ -100,3 +100,8 @@ func ReadLinesOffsetN(filename string, offset uint, n int) ([]string, error) {
 	}
 	return ret, nil
 }
+
+// 判断所给路径是否为文件
+func IsFile(path string) bool {
+	return !IsDir(path)
+}

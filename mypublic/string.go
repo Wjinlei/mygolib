@@ -4,7 +4,19 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"bytes"
+	"crypto/rand"
+	"math/big"
 )
+
+// 字符串转整型,错误返回0
+func Atoi(s string) int {
+	sInt, err := strconv.Atoi(s)
+	if err != nil {
+		return 0
+	}
+	return sInt
+}
 
 // FilterSQL 过滤可能造成sql注入的字符
 func FilterSQL(sql string) string {
@@ -78,10 +90,46 @@ func Float64ToKBMBGB(value float64) string {
 	return retStr
 }
 
-func Atoi(s string) int {
-	sInt, err := strconv.Atoi(s)
-	if err != nil {
-		return 0
+// ContainsString 判断元素是否存在于Slice中, String类型
+func ContainsString(s []string, e string) bool {
+	for _, a := range s {
+		if strings.TrimSpace(a) == e {
+			return true
+		}
 	}
-	return sInt
+	return false
+}
+
+// ContainsInt 判断元素是否存在于Slice中, Int类型
+func ContainsInt(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+// ContainsInt 判断元素是否存在于Slice中, Int类型
+func ContainsUInt(s []uint, e uint) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+// CreateRandomString 生成随机字符串
+func CreateRandomString(len int) string {
+	var container string
+	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	b := bytes.NewBufferString(str)
+	length := b.Len()
+	bigInt := big.NewInt(int64(length))
+	for i := 0; i < len; i++ {
+		randomInt, _ := rand.Int(rand.Reader, bigInt)
+		container += string(str[randomInt.Int64()])
+	}
+	return container
 }

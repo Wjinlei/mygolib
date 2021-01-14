@@ -3,7 +3,26 @@ package mypublic
 import (
 	"os"
 	"strings"
+
+	"github.com/mozillazg/go-pinyin"
 )
+
+// 中文转拼音
+func Pinyin(s string) string {
+	pinyinArgs := pinyin.NewArgs()
+	pinyinArgs.Style = pinyin.FirstLetter
+	pys := []string{}
+	for _, r := range s {
+		py := pinyin.SinglePinyin(r, pinyinArgs)
+		if len(py) > 0 {
+			pys = append(pys, py[0])
+		} else {
+			pys = append(pys, string(r))
+		}
+	}
+	ns := strings.Join(pys, "")
+	return ns
+}
 
 // 判断所给路径文件/文件夹是否存在
 func Exists(path string) bool {
@@ -14,48 +33,4 @@ func Exists(path string) bool {
 		return false
 	}
 	return true
-}
-
-// 判断所给路径是否为文件夹
-func IsDir(path string) bool {
-	s, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	return s.IsDir()
-}
-
-// 判断所给路径是否为文件
-func IsFile(path string) bool {
-	return !IsDir(path)
-}
-
-// ContainsString 判断元素是否存在于Slice中, String类型
-func ContainsString(s []string, e string) bool {
-	for _, a := range s {
-		if strings.TrimSpace(a) == e {
-			return true
-		}
-	}
-	return false
-}
-
-// ContainsInt 判断元素是否存在于Slice中, Int类型
-func ContainsInt(s []int, e int) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
-// ContainsInt 判断元素是否存在于Slice中, Int类型
-func ContainsUInt(s []uint, e uint) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
 }
