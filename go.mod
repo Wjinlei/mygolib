@@ -8,6 +8,7 @@ require (
 	github.com/beevik/etree v1.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
+	github.com/go-ini/ini v1.62.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.16
