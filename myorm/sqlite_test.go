@@ -7,16 +7,16 @@ import (
 )
 
 func TestNewSqlite(t *testing.T) {
-	db, err := NewSqlite(&Option{
-		DataSource: "hws.db",
+	db, err := NewSqlite(Option{
+		DataSource: "test.db",
 		LogMode:    true,
 		LogLevel:   logger.Info,
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	db.Instance.AutoMigrate(&TestModel{})
-	db.Instance.Create(&TestModel{Name: "zhangSan"})
-	db.Instance.Create(&TestModel{Name: "LiSi"})
-	db.Instance.Create(&TestModel{Name: "WangWu"})
+	db.AutoMigrate(&TestModel{})
+	db.Create(&TestModel{Name: "zhangSan"})
+	db.Create(&TestModel{Name: "LiSi"})
+	db.Create(&TestModel{Name: "WangWu"})
 }

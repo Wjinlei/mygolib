@@ -29,10 +29,6 @@ package myorm
 //                代码无bug!
 
 import (
-	"database/sql"
-
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
@@ -43,16 +39,3 @@ type Option struct {
 	LogPath    string          // 日志文件路径
 	LogLevel   logger.LogLevel // 如果不传,默认为Silent(不记录日志)
 }
-
-// DB gorm.DB实例
-type DB struct {
-	Instance *gorm.DB
-	Conn     *sql.DB
-}
-
-var (
-	err error
-
-	sqliteRotator *rotatelogs.RotateLogs // sqlite 全局日志切割器
-	mysqlRotator  *rotatelogs.RotateLogs // mysql 全局日志切割器
-)

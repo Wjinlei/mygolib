@@ -1,60 +1,29 @@
 package myorm
 
 import (
-	"fmt"
-
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 // NewSqlite 产生sqlite实例
-func NewSqlite(option *Option) (*DB, error) {
-	if option == nil {
-		return nil, fmt.Errorf("[ERROR]: Option is nil")
-	}
-	if option.LogMode == true {
-		if sqliteRotator == nil {
-			sqliteRotator, err = newRotator(option.LogPath)
-			if err != nil {
-				return nil, err
-			}
-		}
-		sqliteLogger, err := newLogger(option.LogLevel, sqliteRotator)
+func NewSqlite(option Option) (*gorm.DB, error) {
+	if option.LogMode {
+		logger, err := newLogger(option.LogPath, option.LogLevel)
 		if err != nil {
 			return nil, err
 		}
-		db, err := gorm.Open(sqlite.Open(option.DataSource),
-			&gorm.Config{Logger: sqliteLogger})
+		db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{Logger: logger})
 		if err != nil {
 			return nil, err
 		}
-		if err := openForeginKey(db); err != nil {
-			return nil, err
-		}
-		conn, err := db.DB()
+		db.Exec("PRAGMA foreign_keys = ON")
+		return db, nil
+	} else {
+		db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{})
 		if err != nil {
 			return nil, err
 		}
-		return &DB{Instance: db, Conn: conn}, nil
+		db.Exec("PRAGMA foreign_keys = ON")
+		return db, nil
 	}
-	db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-	if err := openForeginKey(db); err != nil {
-		return nil, err
-	}
-	conn, err := db.DB()
-	if err != nil {
-		return nil, err
-	}
-	return &DB{Instance: db, Conn: conn}, nil
-}
-
-// openForeginKey 打开Sqlite3外键支持
-func openForeginKey(db *gorm.DB) error {
-	if err := db.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
-		return err
-	}
-	return nil
 }
