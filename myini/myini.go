@@ -10,7 +10,7 @@ type Obj struct {
 }
 
 // 加载ini文件到内存中
-func LoadFile(filepath string) (*Obj, error) {
+func Loadfile(filepath string) (*Obj, error) {
 	f, err := ini.Load(filepath)
 	if err != nil {
 		return nil, err
