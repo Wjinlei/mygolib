@@ -5,15 +5,15 @@ import (
 	"testing"
 )
 
-func TestLoadFile(t *testing.T) {
-	_, err := LoadFile("test.ini")
+func TestLoadfile(t *testing.T) {
+	_, err := Loadfile("test.ini")
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestAddKey(t *testing.T) {
-	f, err := LoadFile("test.ini")
+	f, err := Loadfile("test.ini")
 	if err != nil {
 		t.Error(err)
 	}
@@ -23,7 +23,7 @@ func TestAddKey(t *testing.T) {
 }
 
 func TestDelKey(t *testing.T) {
-	f, err := LoadFile("test.ini")
+	f, err := Loadfile("test.ini")
 	if err != nil {
 		t.Error(err)
 	}
@@ -33,7 +33,7 @@ func TestDelKey(t *testing.T) {
 }
 
 func TestSetKey(t *testing.T) {
-	f, err := LoadFile("test.ini")
+	f, err := Loadfile("test.ini")
 	if err != nil {
 		t.Error(err)
 	}
@@ -43,7 +43,7 @@ func TestSetKey(t *testing.T) {
 }
 
 func TestGetKey(t *testing.T) {
-	f, err := LoadFile("test.ini")
+	f, err := Loadfile("test.ini")
 	if err != nil {
 		t.Error(err)
 	}
@@ -52,7 +52,7 @@ func TestGetKey(t *testing.T) {
 }
 
 func TestGetKeys(t *testing.T) {
-	f, err := LoadFile("test.ini")
+	f, err := Loadfile("test.ini")
 	if err != nil {
 		t.Error(err)
 	}
@@ -63,7 +63,7 @@ func TestGetKeys(t *testing.T) {
 }
 
 func TestHasKey(t *testing.T) {
-	f, err := LoadFile("test.ini")
+	f, err := Loadfile("test.ini")
 	if err != nil {
 		t.Error(err)
 	}
