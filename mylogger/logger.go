@@ -31,6 +31,7 @@ package mylogger
 import (
 	"fmt"
 	"path/filepath"
+	"sync"
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -77,43 +78,48 @@ const (
 )
 
 var (
+	mutex  sync.Mutex
 	logger *Logger
 )
 
 // GetLogger 产生新的logger
 func GetLogger(option *Option) (*Logger, error) {
 	if logger == nil {
-		logrusLogger := logrus.New()
-		switch option.LogType {
-		case "json":
-			logrusLogger.SetFormatter(&logrus.JSONFormatter{
-				TimestampFormat: DefaultTimeFormat,
-				DataKey:         DefaultDataKey,
-				PrettyPrint:     option.PrettyPrint,
-			})
-		default:
-			logrusLogger.SetFormatter(&logrus.TextFormatter{
-				TimestampFormat: DefaultTimeFormat,
-			})
+		mutex.Lock()
+		if logger == nil {
+			logrusLogger := logrus.New()
+			switch option.LogType {
+			case "json":
+				logrusLogger.SetFormatter(&logrus.JSONFormatter{
+					TimestampFormat: DefaultTimeFormat,
+					DataKey:         DefaultDataKey,
+					PrettyPrint:     option.PrettyPrint,
+				})
+			default:
+				logrusLogger.SetFormatter(&logrus.TextFormatter{
+					TimestampFormat: DefaultTimeFormat,
+				})
+			}
+			logrusLogger.Level = logrus.Level(option.LogLevel)
+			filePath, err := filepath.Abs(option.LogPath)
+			if err != nil {
+				return nil, err
+			}
+			rotator, err := rotatelogs.New(
+				fmt.Sprintf("%s-%s", filePath, DefaultDateFormat),
+				rotatelogs.WithLinkName(filePath),
+				rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
+				rotatelogs.WithRotationTime(option.RotationTime), // 多久滚动一次
+			)
+			if err != nil {
+				return nil, err
+			}
+			logrusLogger.SetOutput(rotator)
+			logger = &Logger{
+				logger: logrusLogger,
+			}
 		}
-		logrusLogger.Level = logrus.Level(option.LogLevel)
-		filePath, err := filepath.Abs(option.LogPath)
-		if err != nil {
-			return nil, err
-		}
-		rotator, err := rotatelogs.New(
-			fmt.Sprintf("%s-%s", filePath, DefaultDateFormat),
-			rotatelogs.WithLinkName(filePath),
-			rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
-			rotatelogs.WithRotationTime(option.RotationTime), // 多久滚动一次
-		)
-		if err != nil {
-			return nil, err
-		}
-		logrusLogger.SetOutput(rotator)
-		logger = &Logger{
-			logger: logrusLogger,
-		}
+		mutex.Unlock()
 	}
 	return logger, nil
 }
