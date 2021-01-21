@@ -1,12 +1,12 @@
 package mypublic
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
 	"bytes"
 	"crypto/rand"
+	"fmt"
 	"math/big"
+	"strconv"
+	"strings"
 )
 
 // 字符串转整型,错误返回0
@@ -18,33 +18,22 @@ func Atoi(s string) int {
 	return sInt
 }
 
-// FilterSQL 过滤可能造成sql注入的字符
-func FilterSQL(sql string) string {
-	sql = strings.ReplaceAll(sql, "'", "")
-	sql = strings.ReplaceAll(sql, "\"", "")
-	sql = strings.ReplaceAll(sql, "(", "")
-	sql = strings.ReplaceAll(sql, ")", "")
-	//sql = strings.ReplaceAll(sql, "*", "") // 由于域名可能会用到*,所以不过滤*
-	sql = strings.ReplaceAll(sql, ".", "_")
-	sql = strings.ReplaceAll(sql, "[", "")
-	sql = strings.ReplaceAll(sql, "]", "")
-	sql = strings.ReplaceAll(sql, " ", "")
-	sql = strings.ReplaceAll(sql, "=", "")
-	sql = strings.ReplaceAll(sql, ">", "")
-	sql = strings.ReplaceAll(sql, "<", "")
-	sql = strings.ReplaceAll(sql, "%", "")
-	sql = strings.ReplaceAll(sql, "\t", "")
-	return sql
-}
-
-// TrimQuotes 删除源字符的引号
-func TrimQuotes(s string) string {
-	if len(s) >= 2 {
-		if s[0] == '"' && s[len(s)-1] == '"' {
-			return s[1 : len(s)-1]
-		}
-	}
-	return s
+func FilterStr(str string) string {
+	str = strings.ReplaceAll(str, "'", "")
+	str = strings.ReplaceAll(str, "\"", "")
+	str = strings.ReplaceAll(str, "(", "")
+	str = strings.ReplaceAll(str, ")", "")
+	//str = strings.ReplaceAll(str, "*", "")
+	str = strings.ReplaceAll(str, ".", "_")
+	str = strings.ReplaceAll(str, "[", "")
+	str = strings.ReplaceAll(str, "]", "")
+	str = strings.ReplaceAll(str, " ", "")
+	str = strings.ReplaceAll(str, "=", "")
+	str = strings.ReplaceAll(str, ">", "")
+	str = strings.ReplaceAll(str, "<", "")
+	str = strings.ReplaceAll(str, "%", "")
+	str = strings.ReplaceAll(str, "\t", "")
+	return str
 }
 
 // Int64ToKBMBGB 将int64类型表示的字节转换为带上单位的String
