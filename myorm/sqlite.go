@@ -7,23 +7,31 @@ import (
 
 // NewSqlite 产生sqlite实例
 func NewSqlite(option Option) (*gorm.DB, error) {
-	if option.WriteLog {
-		logger, err := newLogger(option.FilePath, option.Level)
-		if err != nil {
-			return nil, err
+	if Sqlite == nil {
+		mutex.Lock()
+		if Sqlite == nil {
+			if option.WriteLog {
+				logger, err := newLogger(option.FilePath, option.Level)
+				if err != nil {
+					mutex.Unlock()
+					return nil, err
+				}
+				Sqlite, err = gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{Logger: logger})
+				if err != nil {
+					mutex.Unlock()
+					return nil, err
+				}
+				Sqlite.Exec("PRAGMA foreign_keys = ON")
+			} else {
+				Sqlite, err = gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{})
+				if err != nil {
+					mutex.Unlock()
+					return nil, err
+				}
+				Sqlite.Exec("PRAGMA foreign_keys = ON")
+			}
 		}
-		db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{Logger: logger})
-		if err != nil {
-			return nil, err
-		}
-		db.Exec("PRAGMA foreign_keys = ON")
-		return db, nil
-	} else {
-		db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{})
-		if err != nil {
-			return nil, err
-		}
-		db.Exec("PRAGMA foreign_keys = ON")
-		return db, nil
+		mutex.Unlock()
 	}
+	return Sqlite, nil
 }

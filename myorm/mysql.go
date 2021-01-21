@@ -7,21 +7,29 @@ import (
 
 // NewMySQL 产生MySQL实例
 func NewMySQL(option Option) (*gorm.DB, error) {
-	if option.WriteLog {
-		logger, err := newLogger(option.FilePath, option.Level)
-		if err != nil {
-			return nil, err
+	if Mysql == nil {
+		mutex.Lock()
+		if Mysql == nil {
+			if option.WriteLog {
+				logger, err := newLogger(option.FilePath, option.Level)
+				if err != nil {
+					mutex.Unlock()
+					return nil, err
+				}
+				Mysql, err = gorm.Open(mysql.Open(option.DataSource), &gorm.Config{Logger: logger})
+				if err != nil {
+					mutex.Unlock()
+					return nil, err
+				}
+			} else {
+				Mysql, err = gorm.Open(mysql.Open(option.DataSource), &gorm.Config{})
+				if err != nil {
+					mutex.Unlock()
+					return nil, err
+				}
+			}
 		}
-		db, err := gorm.Open(mysql.Open(option.DataSource), &gorm.Config{Logger: logger})
-		if err != nil {
-			return nil, err
-		}
-		return db, nil
-	} else {
-		db, err := gorm.Open(mysql.Open(option.DataSource), &gorm.Config{})
-		if err != nil {
-			return nil, err
-		}
-		return db, nil
+		mutex.Unlock()
 	}
+	return Mysql, nil
 }
