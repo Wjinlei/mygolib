@@ -7,8 +7,8 @@ import (
 
 // NewMySQL 产生MySQL实例
 func NewMySQL(option Option) (*gorm.DB, error) {
-	if option.LogMode {
-		logger, err := newLogger(option.LogPath, option.LogLevel)
+	if option.WriteLog {
+		logger, err := newLogger(option.FilePath, option.Level)
 		if err != nil {
 			return nil, err
 		}

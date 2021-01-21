@@ -35,7 +35,7 @@ import (
 // Option 选项
 type Option struct {
 	DataSource string          // 数据源
-	LogMode    bool            // 是否启用日志
-	LogPath    string          // 日志文件路径
-	LogLevel   logger.LogLevel // 如果不传,默认为Silent(不记录日志)
+	WriteLog   bool            // 是否写日志
+	FilePath   string          // 日志文件路径
+	Level      logger.LogLevel // 如果不传,默认为Silent(不记录日志)
 }

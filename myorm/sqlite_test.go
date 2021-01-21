@@ -9,8 +9,8 @@ import (
 func TestNewSqlite(t *testing.T) {
 	db, err := NewSqlite(Option{
 		DataSource: "test.db",
-		LogMode:    true,
-		LogLevel:   logger.Info,
+		WriteLog:   true,
+		Level:      logger.Info,
 	})
 	if err != nil {
 		t.Error(err)
