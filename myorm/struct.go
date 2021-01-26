@@ -29,16 +29,7 @@ package myorm
 //                代码无bug!
 
 import (
-	"sync"
-
-	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-)
-
-var (
-	err    error
-	mutex  sync.Mutex
-	Sqlite *gorm.DB
 )
 
 // Option 选项
