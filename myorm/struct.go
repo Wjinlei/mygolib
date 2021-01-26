@@ -39,7 +39,6 @@ var (
 	err    error
 	mutex  sync.Mutex
 	Sqlite *gorm.DB
-	Mysql  *gorm.DB
 )
 
 // Option 选项
