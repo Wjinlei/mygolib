@@ -13,8 +13,13 @@ func TestNewSqlite(t *testing.T) {
 		Level:      logger.Info,
 	})
 	if err != nil {
+		t.Fatal(err)
+	}
+	conn, err := db.DB()
+	if err != nil {
 		t.Error(err)
 	}
+	defer conn.Close()
 	db.AutoMigrate(&TestModel{})
 	db.Create(&TestModel{Name: "zhangSan"})
 	db.Create(&TestModel{Name: "LiSi"})
