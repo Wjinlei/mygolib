@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // 字符串转整型,错误返回0
@@ -34,6 +35,37 @@ func FilterStr(str string) string {
 	str = strings.ReplaceAll(str, "%", "")
 	str = strings.ReplaceAll(str, "\t", "")
 	return str
+}
+
+func IsDigit(str string) bool {
+	for _, r := range str {
+		if ok := unicode.IsDigit(r); !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func IsLetter(str string) bool {
+	for _, r := range str {
+		if ok := unicode.IsLetter(r); !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func IsLetterOrDigit(str string) bool {
+	for _, r := range str {
+		if ok := unicode.IsDigit(r); !ok {
+			for _, r := range str {
+				if ok := unicode.IsLetter(r); !ok {
+					return false
+				}
+			}
+		}
+	}
+	return true
 }
 
 // Int64ToKBMBGB 将int64类型表示的字节转换为带上单位的String
