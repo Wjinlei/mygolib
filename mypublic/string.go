@@ -7,7 +7,6 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
-	"unicode"
 )
 
 // 字符串转整型,错误返回0
@@ -44,37 +43,6 @@ func TrimQuotes(s string) string {
 		}
 	}
 	return s
-}
-
-func IsDigit(str string) bool {
-	for _, r := range str {
-		if ok := unicode.IsDigit(r); !ok {
-			return false
-		}
-	}
-	return true
-}
-
-func IsLetter(str string) bool {
-	for _, r := range str {
-		if ok := unicode.IsLetter(r); !ok {
-			return false
-		}
-	}
-	return true
-}
-
-func IsLetterOrDigit(str string) bool {
-	for _, r := range str {
-		if ok := unicode.IsDigit(r); !ok {
-			for _, r := range str {
-				if ok := unicode.IsLetter(r); !ok {
-					return false
-				}
-			}
-		}
-	}
-	return true
 }
 
 // Int64ToKBMBGB 将int64类型表示的字节转换为带上单位的String
@@ -118,36 +86,6 @@ func Float64ToKBMBGB(value float64) string {
 		retStr = fmt.Sprintf("%.2f", value) + "(KB)"
 	}
 	return retStr
-}
-
-// ContainsString 判断元素是否存在于Slice中, String类型
-func ContainsString(s []string, e string) bool {
-	for _, a := range s {
-		if strings.TrimSpace(a) == e {
-			return true
-		}
-	}
-	return false
-}
-
-// ContainsInt 判断元素是否存在于Slice中, Int类型
-func ContainsInt(s []int, e int) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
-// ContainsInt 判断元素是否存在于Slice中, Int类型
-func ContainsUInt(s []uint, e uint) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
 }
 
 // CreateRandomString 生成随机字符串
