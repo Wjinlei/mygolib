@@ -37,6 +37,15 @@ func FilterStr(str string) string {
 	return str
 }
 
+func TrimQuotes(s string) string {
+	if len(s) >= 2 {
+		if s[0] == '"' && s[len(s)-1] == '"' {
+			return s[1 : len(s)-1]
+		}
+	}
+	return s
+}
+
 func IsDigit(str string) bool {
 	for _, r := range str {
 		if ok := unicode.IsDigit(r); !ok {
