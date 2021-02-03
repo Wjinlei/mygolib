@@ -3,7 +3,7 @@ package mypublic
 import "testing"
 
 func TestFilterSql(t *testing.T) {
-	sql := FilterSQL("()][].")
+	sql := FilterStr("()][].")
 	if sql != "_" {
 		t.Error(sql)
 	}
