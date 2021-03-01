@@ -11,6 +11,7 @@ import (
 
 // DownloadFile 下载文件
 func DownloadFile(url string, path string) error {
+	MakeDirAll(path)
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
