@@ -49,3 +49,9 @@ func TestMoveFile(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestCopyFile(t *testing.T) {
+	if err := CopyFile("./file.go", "./file.go.bak"); err != nil {
+		t.Error(err)
+	}
+}

@@ -55,6 +55,27 @@ func MoveFile(oldpath string, newpath string) error {
 	return nil
 }
 
+// CopyFile 复制文件
+func CopyFile(oldpath string, newpath string) error {
+	// 目标文件
+	oldfile, err := os.Open(oldpath)
+	if err != nil {
+		return err
+	}
+	defer oldfile.Close()
+	newfile, err := os.OpenFile(newpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer newfile.Close()
+	// 保存响应数据到文件
+	_, err = io.Copy(newfile, oldfile)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // WriteFile 写入字符串到文件
 func WriteFile(filepath string, content string) error {
 	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
