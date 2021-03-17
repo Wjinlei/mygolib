@@ -10,7 +10,6 @@ func TestNew(t *testing.T) {
 		LogPath:       "log/test.log",
 		LogLevel:      DebugLevel,
 		LogType:       "text",
-		MaxAge:        time.Duration(30) * time.Second,
 		RotationCount: 5,
 		RotationSize:  100,
 		PrettyPrint:   false,

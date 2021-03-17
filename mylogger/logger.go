@@ -31,7 +31,6 @@ package mylogger
 import (
 	"fmt"
 	"path/filepath"
-	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	logrus "github.com/sirupsen/logrus"
@@ -39,13 +38,12 @@ import (
 
 // Option 选项定义
 type Option struct {
-	LogPath       string        // 日志路径
-	LogLevel      LogLevel      // 日志级别
-	LogType       string        // 日志类型: json, text
-	MaxAge        time.Duration // 日志文件清理前的最长保存时间
-	RotationCount uint          // 日志文件保留个数
-	RotationSize  int64         // 日志文件滚动大小,单位是KB
-	PrettyPrint   bool          // 美化输出
+	LogPath       string   // 日志路径
+	LogLevel      LogLevel // 日志级别
+	LogType       string   // 日志类型: json, text
+	RotationCount uint     // 日志文件保留个数
+	RotationSize  int64    // 日志文件滚动大小,单位是KB
+	PrettyPrint   bool     // 美化输出
 }
 
 // Logger 日志结构体
