@@ -28,7 +28,8 @@ func newRotator(logpath string) *rotatelogs.RotateLogs {
 		fmt.Sprintf("%s-%s", absPath, "%Y%m%d%H%M"),
 		rotatelogs.WithLinkName(absPath),
 		rotatelogs.WithMaxAge(time.Duration(3*3600)*time.Second),     // 日志文件清理前的最长保存时间
-		rotatelogs.WithRotationTime(time.Duration(3600)*time.Second), // 多久滚动一次
+		rotatelogs.WithRotationTime(time.Duration(3600)*time.Second), // 多久滚动一次,
+		rotatelogs.ForceNewFile(),
 	)
 	return rotator
 }
