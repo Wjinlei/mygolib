@@ -11,7 +11,7 @@ func TestNew(t *testing.T) {
 		LogLevel:     DebugLevel,
 		LogType:      "json",
 		MaxAge:       time.Duration(180) * time.Second,
-		RotationTime: time.Duration(60) * time.Second,
+		RotationSize: 1024,
 		PrettyPrint:  false,
 	})
 	if err != nil {

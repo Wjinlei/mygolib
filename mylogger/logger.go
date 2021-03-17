@@ -44,7 +44,7 @@ type Option struct {
 	LogLevel     LogLevel      // 日志级别
 	LogType      string        // 日志类型: json, text
 	MaxAge       time.Duration // 日志文件清理前的最长保存时间
-	RotationTime time.Duration // 日志文件多长时间清理(切割)一次
+	RotationSize int64         // 日志文件增长到多大滚动一次,单位是KB
 	PrettyPrint  bool          // 美化输出
 }
 
@@ -109,7 +109,7 @@ func GetLogger(option *Option) (*Logger, error) {
 				fmt.Sprintf("%s-%s", filePath, DefaultDateFormat),
 				rotatelogs.WithLinkName(filePath),
 				rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
-				rotatelogs.WithRotationTime(option.RotationTime), // 多久滚动一次
+				rotatelogs.WithRotationSize(option.RotationSize), // 按大小滚动
 			)
 			if err != nil {
 				return nil, err
