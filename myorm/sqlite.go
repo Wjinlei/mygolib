@@ -8,11 +8,7 @@ import (
 // NewSqlite 产生sqlite实例
 func NewSqlite(option Option) (*gorm.DB, error) {
 	if option.WriteLog {
-		logger, err := newLogger(option.FilePath, option.Level)
-		if err != nil {
-			return nil, err
-		}
-		db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{Logger: logger})
+		db, err := gorm.Open(sqlite.Open(option.DataSource), &gorm.Config{Logger: newLogger(option.FilePath, option.Level)})
 		if err != nil {
 			return nil, err
 		}

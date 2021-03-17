@@ -12,15 +12,12 @@ import (
 )
 
 // newLogger 产生新的日志器对象
-func newLogger(logpath string, loglevel logger.LogLevel) (logger.Interface, error) {
-	mylogger := logger.New(log.New(newRotator(logpath), "\r\n", log.LstdFlags),
-		logger.Config{
-			SlowThreshold: time.Second,
-			LogLevel:      loglevel,
-			Colorful:      false,
-		},
-	)
-	return mylogger, nil
+func newLogger(logpath string, loglevel logger.LogLevel) logger.Interface {
+	return logger.New(log.New(newRotator(logpath), "\r\n", log.LstdFlags), logger.Config{
+		SlowThreshold: time.Second,
+		LogLevel:      loglevel,
+		Colorful:      false,
+	})
 }
 
 // newRotator 产生新的日志切割器
