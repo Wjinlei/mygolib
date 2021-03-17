@@ -7,12 +7,13 @@ import (
 
 func TestNew(t *testing.T) {
 	logger, err := NewLogger(&Option{
-		LogPath:      "./log/test.log",
-		LogLevel:     DebugLevel,
-		LogType:      "json",
-		MaxAge:       time.Duration(30) * time.Second,
-		RotationTime: time.Duration(10) * time.Second,
-		PrettyPrint:  false,
+		LogPath:       "log/test.log",
+		LogLevel:      DebugLevel,
+		LogType:       "text",
+		MaxAge:        time.Duration(30) * time.Second,
+		RotationCount: 5,
+		RotationSize:  100,
+		PrettyPrint:   false,
 	})
 	if err != nil {
 		t.Error(err)
