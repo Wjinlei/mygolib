@@ -16,8 +16,10 @@ func TestNewMySQL(t *testing.T) {
 func newMysql() *gorm.DB {
 	mysql, err := NewMySQL("root:123@tcp(127.0.0.1:3306)/",
 		NewLogger(&Option{
-			LogPath:  "log/mysql.log",
-			LogLevel: logger.Info,
+			LogPath:       "log/mysql.log",
+			LogLevel:      logger.Info,
+			RotationCount: 5,
+			RotationSize:  100,
 		}))
 	if err != nil {
 		panic(err)

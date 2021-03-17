@@ -20,8 +20,10 @@ func TestNewSqlite(t *testing.T) {
 func newSqlite() *gorm.DB {
 	db, err := NewSqlite("sqlite.db",
 		NewLogger(&Option{
-			LogPath:  "log/sqlite.log",
-			LogLevel: logger.Info,
+			LogPath:       "log/sqlite.log",
+			LogLevel:      logger.Info,
+			RotationCount: 5,
+			RotationSize:  100,
 		}))
 	if err != nil {
 		panic(err)
