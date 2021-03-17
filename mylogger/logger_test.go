@@ -6,12 +6,12 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	logger, err := GetLogger(&Option{
+	logger, err := NewLogger(&Option{
 		LogPath:      "./log/test.log",
 		LogLevel:     DebugLevel,
 		LogType:      "json",
-		MaxAge:       time.Duration(180) * time.Second,
-		RotationSize: 1024,
+		MaxAge:       time.Duration(30) * time.Second,
+		RotationTime: time.Duration(10) * time.Second,
 		PrettyPrint:  false,
 	})
 	if err != nil {
