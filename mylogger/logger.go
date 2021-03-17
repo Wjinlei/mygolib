@@ -110,7 +110,6 @@ func GetLogger(option *Option) (*Logger, error) {
 				rotatelogs.WithLinkName(filePath),
 				rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
 				rotatelogs.WithRotationSize(option.RotationSize), // 按大小滚动
-				rotatelogs.ForceNewFile(),
 			)
 			if err != nil {
 				return nil, err
