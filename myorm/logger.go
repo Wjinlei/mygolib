@@ -12,10 +12,10 @@ import (
 )
 
 // newLogger 产生新的日志器对象
-func NewLogger(logpath string, loglevel logger.LogLevel) logger.Interface {
-	return logger.New(log.New(newRotator(logpath), "\r\n", log.LstdFlags), logger.Config{
+func NewLogger(option *Option) logger.Interface {
+	return logger.New(log.New(newRotator(option.LogPath), "\r\n", log.LstdFlags), logger.Config{
 		SlowThreshold: time.Second,
-		LogLevel:      loglevel,
+		LogLevel:      option.LogLevel,
 		Colorful:      false,
 	})
 }
@@ -27,9 +27,9 @@ func newRotator(logpath string) *rotatelogs.RotateLogs {
 	rotator, _ := rotatelogs.New(
 		fmt.Sprintf("%s-%s", absPath, "%Y%m%d%H%M"),
 		rotatelogs.WithLinkName(absPath),
-		rotatelogs.WithMaxAge(time.Duration(3*3600)*time.Second),     // 日志文件清理前的最长保存时间
-		rotatelogs.WithRotationTime(time.Duration(3600)*time.Second), // 多久滚动一次,
-		rotatelogs.WithRotationSize(1024*1024),                       // 按大小滚动,1M滚动一次
+		rotatelogs.WithMaxAge(time.Duration(3*3600)*time.Second), // 日志文件清理前的最长保存时间
+		rotatelogs.WithRotationSize(1024*1024),                   // 按大小滚动,1M滚动一次
+		rotatelogs.WithRotationCount(30),                         // 按大小滚动,1M滚动一次
 	)
 	return rotator
 }

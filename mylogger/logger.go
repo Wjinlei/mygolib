@@ -31,7 +31,6 @@ package mylogger
 import (
 	"fmt"
 	"path/filepath"
-	"sync"
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -40,12 +39,13 @@ import (
 
 // Option 选项定义
 type Option struct {
-	LogPath      string        // 日志路径
-	LogLevel     LogLevel      // 日志级别
-	LogType      string        // 日志类型: json, text
-	MaxAge       time.Duration // 日志文件清理前的最长保存时间
-	RotationSize int64         // 日志文件增长到多大滚动一次,单位是KB
-	PrettyPrint  bool          // 美化输出
+	LogPath       string        // 日志路径
+	LogLevel      LogLevel      // 日志级别
+	LogType       string        // 日志类型: json, text
+	MaxAge        time.Duration // 日志文件清理前的最长保存时间
+	RotationCount uint          // 日志文件最大保留多少个
+	RotationSize  int64         // 日志文件增长到多大滚动一次,单位是KB
+	PrettyPrint   bool          // 美化输出
 }
 
 // Logger 日志结构体
@@ -77,51 +77,38 @@ const (
 	DefaultDataKey    = "data"                // 附加字段都会作为该字段的嵌入字段
 )
 
-var (
-	mutex  sync.Mutex
-	logger *Logger
-)
-
 // GetLogger 产生新的logger
-func GetLogger(option *Option) (*Logger, error) {
-	if logger == nil {
-		mutex.Lock()
-		if logger == nil {
-			logrusLogger := logrus.New()
-			switch option.LogType {
-			case "json":
-				logrusLogger.SetFormatter(&logrus.JSONFormatter{
-					TimestampFormat: DefaultTimeFormat,
-					DataKey:         DefaultDataKey,
-					PrettyPrint:     option.PrettyPrint,
-				})
-			default:
-				logrusLogger.SetFormatter(&logrus.TextFormatter{
-					TimestampFormat: DefaultTimeFormat,
-				})
-			}
-			logrusLogger.Level = logrus.Level(option.LogLevel)
-			filePath, err := filepath.Abs(option.LogPath)
-			if err != nil {
-				return nil, err
-			}
-			rotator, err := rotatelogs.New(
-				fmt.Sprintf("%s-%s", filePath, DefaultDateFormat),
-				rotatelogs.WithLinkName(filePath),
-				rotatelogs.WithMaxAge(option.MaxAge),             // 日志文件清理前的最长保存时间
-				rotatelogs.WithRotationSize(option.RotationSize), // 按大小滚动
-			)
-			if err != nil {
-				return nil, err
-			}
-			logrusLogger.SetOutput(rotator)
-			logger = &Logger{
-				logger: logrusLogger,
-			}
-		}
-		mutex.Unlock()
+func NewLogger(option *Option) (*Logger, error) {
+	logrusLogger := logrus.New()
+	switch option.LogType {
+	case "json":
+		logrusLogger.SetFormatter(&logrus.JSONFormatter{
+			TimestampFormat: DefaultTimeFormat,
+			DataKey:         DefaultDataKey,
+			PrettyPrint:     option.PrettyPrint,
+		})
+	default:
+		logrusLogger.SetFormatter(&logrus.TextFormatter{
+			TimestampFormat: DefaultTimeFormat,
+		})
 	}
-	return logger, nil
+	logrusLogger.Level = logrus.Level(option.LogLevel)
+	absPath, err := filepath.Abs(option.LogPath)
+	if err != nil {
+		return nil, err
+	}
+	rotator, err := rotatelogs.New(
+		fmt.Sprintf("%s-%s", absPath, DefaultDateFormat),
+		rotatelogs.WithLinkName(absPath),
+		rotatelogs.WithMaxAge(option.MaxAge),               // 日志文件清理前的最长保存时间
+		rotatelogs.WithRotationCount(option.RotationCount), // 最大保留多少个
+		rotatelogs.WithRotationSize(option.RotationSize),   // 按大小滚动
+	)
+	if err != nil {
+		return nil, err
+	}
+	logrusLogger.SetOutput(rotator)
+	return &Logger{logger: logrusLogger}, nil
 }
 
 // Trace 打印Debug日志
