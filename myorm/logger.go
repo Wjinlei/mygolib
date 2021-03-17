@@ -12,7 +12,7 @@ import (
 )
 
 // newLogger 产生新的日志器对象
-func newLogger(logpath string, loglevel logger.LogLevel) logger.Interface {
+func NewLogger(logpath string, loglevel logger.LogLevel) logger.Interface {
 	return logger.New(log.New(newRotator(logpath), "\r\n", log.LstdFlags), logger.Config{
 		SlowThreshold: time.Second,
 		LogLevel:      loglevel,

@@ -18,11 +18,7 @@ func TestNewSqlite(t *testing.T) {
 }
 
 func newSqlite() *gorm.DB {
-	db, err := NewSqlite(Option{
-		DataSource: "test.db",
-		WriteLog:   true,
-		Level:      logger.Warn,
-	})
+	db, err := NewSqlite("sqlite.db", NewLogger("sqlite.log", logger.Info))
 	if err != nil {
 		panic(err)
 	}
