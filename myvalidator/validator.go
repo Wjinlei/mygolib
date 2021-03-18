@@ -71,10 +71,8 @@ func IsLetter(str string) bool {
 func IsLetterOrDigit(str string) bool {
 	for _, r := range str {
 		if ok := unicode.IsDigit(r); !ok {
-			for _, r := range str {
-				if ok := unicode.IsLetter(r); !ok {
-					return false
-				}
+			if ok := unicode.IsLetter(r); !ok {
+				return false
 			}
 		}
 	}
