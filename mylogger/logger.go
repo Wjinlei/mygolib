@@ -31,6 +31,7 @@ package mylogger
 import (
 	"fmt"
 	"path/filepath"
+	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	logrus "github.com/sirupsen/logrus"
@@ -38,12 +39,12 @@ import (
 
 // Option 选项定义
 type Option struct {
-	LogPath       string   // 日志路径
-	LogLevel      LogLevel // 日志级别
-	LogType       string   // 日志类型: json, text
-	RotationCount uint     // 日志文件保留个数
-	RotationSize  int64    // 日志文件滚动大小,单位是KB
-	PrettyPrint   bool     // 美化输出
+	LogPath        string        // 日志路径
+	LogLevel       LogLevel      // 日志级别
+	LogType        string        // 日志类型: json, text
+	RotationMaxAge time.Duration // 日志文件按时间切割的保留时间
+	RotationTime   time.Duration // 日志文件按时间切割
+	PrettyPrint    bool          // 美化输出
 }
 
 // Logger 日志结构体
@@ -98,8 +99,8 @@ func NewLogger(option *Option) (*Logger, error) {
 	rotator, err := rotatelogs.New(
 		fmt.Sprintf("%s-%s", absPath, DefaultDateFormat),
 		rotatelogs.WithLinkName(absPath),
-		rotatelogs.WithRotationSize(option.RotationSize),
-		rotatelogs.WithRotationCount(option.RotationCount),
+		rotatelogs.WithMaxAge(option.RotationMaxAge),
+		rotatelogs.WithRotationTime(option.RotationTime),
 	)
 	if err != nil {
 		return nil, err

@@ -16,8 +16,8 @@ func NewLogger(option *Option) logger.Interface {
 	rotator, _ := rotatelogs.New(
 		fmt.Sprintf("%s-%s", abs(option.LogPath), "%Y%m%d%H%M"),
 		rotatelogs.WithLinkName(abs(option.LogPath)),
-		rotatelogs.WithRotationSize(option.RotationSize),
-		rotatelogs.WithRotationCount(option.RotationCount),
+		rotatelogs.WithMaxAge(option.RotationMaxAge),
+		rotatelogs.WithRotationTime(option.RotationTime),
 	)
 	return logger.New(log.New(rotator, "\r\n", log.LstdFlags), logger.Config{
 		SlowThreshold: time.Second,
