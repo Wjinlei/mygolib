@@ -45,13 +45,13 @@ func TestReadLinesOffsetN(t *testing.T) {
 }
 
 func TestMoveFile(t *testing.T) {
-	if err := MoveFile("./testfile1.txt", "./testfile1.txt.bak"); err != nil {
+	if err := Move("./testfile1.txt", "./testfile1.txt.bak"); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestCopyFile(t *testing.T) {
-	if err := CopyFile("./file.go", "./file.go.bak"); err != nil {
+	if err := Copy("./file.go", "./file.go.bak"); err != nil {
 		t.Error(err)
 	}
 }
