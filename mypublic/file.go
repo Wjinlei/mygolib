@@ -192,6 +192,66 @@ func MoveFile(oldpath string, newpath string) error {
 	return DeleteFile(oldpath)
 }
 
+// MoveDir 移动目录
+func MoveDir(oldpath string, newpath string) error {
+	// 获取源目录信息
+	oldfileStat, err := os.Stat(oldpath)
+	if err != nil {
+		return err
+	}
+
+	// 创建目标目录
+	if err := os.MkdirAll(newpath, oldfileStat.Mode()); err != nil {
+		return err
+	}
+
+	// 打开源目录
+	olddir, err := os.Open(oldpath)
+	if err != nil {
+		return err
+	}
+	defer olddir.Close()
+
+	// 读取目录中的文件信息
+	fileStats, err := olddir.Readdir(-1)
+	if err != nil {
+		return err
+	}
+
+	var errs []error // 用来保存错误
+
+	// 处理目录下的内容
+	for _, fileStat := range fileStats {
+		fsrc := fmt.Sprintf("%s/%s", oldpath, fileStat.Name())
+		fdst := fmt.Sprintf("%s/%s", newpath, fileStat.Name())
+		if fileStat.IsDir() {
+			// 递归创建子目录
+			err = MoveDir(fsrc, fdst)
+			if err != nil {
+				errs = append(errs, err)
+			}
+		} else {
+			// 复制文件
+			err = MoveFile(fsrc, fdst)
+			if err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+
+	// 处理错误信息
+	var errString string
+	for _, err := range errs {
+		errString += err.Error() + "\n"
+	}
+	// 如果有错误,就打包返回
+	if errString != "" {
+		return errors.New(errString)
+	}
+
+	return nil
+}
+
 // DeleteFile 删除文件,如果是一个目录,那只能删除空目录
 func DeleteFile(path string) error {
 	if err := os.Remove(path); err != nil {
