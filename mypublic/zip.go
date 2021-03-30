@@ -14,8 +14,8 @@ import (
 	"github.com/yeka/zip"
 )
 
-// TarGZ tar.gz压缩
-func TarGZ(srcpath, dstpath string) error {
+// TGZ tar.gz压缩
+func TGZ(srcpath, dstpath string) error {
 	// Create output file
 	dstfile, err := os.Create(dstpath)
 	if err != nil {

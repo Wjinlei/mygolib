@@ -2,8 +2,8 @@ package mypublic
 
 import "testing"
 
-func TestTarGZ(t *testing.T) {
-	if err := TarGZ("file.go", "file.tar.gz"); err != nil {
+func TestTGZ(t *testing.T) {
+	if err := TGZ("file.go", "file.tar.gz"); err != nil {
 		t.Error(err)
 	}
 }
