@@ -85,6 +85,19 @@ func DownloadFile(url string, path string) error {
 	return nil
 }
 
+// 复制文件或目录
+func Copy(oldpath string, newpath string) error {
+	oldfileStat, err := os.Stat(oldpath)
+	if err != nil {
+		return err
+	}
+	if oldfileStat.IsDir() {
+		return CopyDir(oldpath, newpath)
+	} else {
+		return CopyFile(oldpath, newpath)
+	}
+}
+
 // CopyFile 复制文件,如果已存在会覆盖
 func CopyFile(oldpath string, newpath string) error {
 	// 源文件
@@ -182,6 +195,19 @@ func CopyDir(oldpath string, newpath string) error {
 	}
 
 	return nil
+}
+
+// 移动文件或目录
+func Move(oldpath string, newpath string) error {
+	oldfileStat, err := os.Stat(oldpath)
+	if err != nil {
+		return err
+	}
+	if oldfileStat.IsDir() {
+		return MoveDir(oldpath, newpath)
+	} else {
+		return MoveFile(oldpath, newpath)
+	}
 }
 
 // MoveFile 移动或重命名文件,如果已存在会覆盖
