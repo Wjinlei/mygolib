@@ -1,6 +1,8 @@
 package mypublic
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"errors"
 	"fmt"
 	"io"
@@ -150,6 +152,100 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		}
 		src.Close()
 		dest.Close()
+	}
+	return nil
+}
+
+func TarGZ(srcpath, dstpath string) error {
+	// Create output file
+	dstfile, err := os.Create(dstpath)
+	if err != nil {
+		return err
+	}
+	defer dstfile.Close()
+
+	// Create new Writers for gzip and tar
+	// These writers are chained. Writing to the tar writer will
+	// write to the gzip writer which in turn will write to
+	// the "buf" writer
+	gw := gzip.NewWriter(dstfile)
+	defer gw.Close()
+	tw := tar.NewWriter(gw)
+	defer tw.Close()
+
+	// Open the file which will be written into the archive
+	srcfile, err := os.Open(srcpath)
+	if err != nil {
+		return err
+	}
+	defer srcfile.Close()
+
+	// Get FileInfo about our file providing file size, mode, etc.
+	srcinfo, err := srcfile.Stat()
+	if err != nil {
+		return err
+	}
+
+	if srcinfo.IsDir() {
+		filepath.Walk(srcpath, func(path string, pathinfo os.FileInfo, err error) error {
+			if path != srcpath {
+				// Create a tar Header from the FileInfo data
+				header, err := tar.FileInfoHeader(pathinfo, pathinfo.Name())
+				if err != nil {
+					return err
+				}
+
+				header.Name = strings.TrimPrefix(path, fmt.Sprintf("%s/", srcpath))
+
+				if pathinfo.IsDir() {
+					header.Name = fmt.Sprintf("%s/", header.Name)
+				} else {
+					// Open the file which will be written into the archive
+					pathfile, err := os.Open(path)
+					if err != nil {
+						return err
+					}
+					defer pathfile.Close()
+
+					// Write file header to the tar archive
+					err = tw.WriteHeader(header)
+					if err != nil {
+						return err
+					}
+
+					// Copy file content to tar archive
+					_, err = io.Copy(tw, pathfile)
+					if err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		})
+	} else {
+		// Create a tar Header from the FileInfo data
+		header, err := tar.FileInfoHeader(srcinfo, srcinfo.Name())
+		if err != nil {
+			return err
+		}
+
+		// Use full path as name (FileInfoHeader only takes the basename)
+		// If we don't do this the directory strucuture would
+		// not be preserved
+		// https://golang.org/src/archive/tar/common.go?#L626
+		header.Name = srcpath
+
+		// Write file header to the tar archive
+		err = tw.WriteHeader(header)
+		if err != nil {
+			return err
+		}
+
+		// Copy file content to tar archive
+		_, err = io.Copy(tw, srcfile)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
