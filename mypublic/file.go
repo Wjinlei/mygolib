@@ -95,7 +95,7 @@ func CopyFile(oldpath string, newpath string) error {
 	defer oldfile.Close()
 
 	// 创建目标文件夹
-	if err := MakeDirAll(oldpath); err != nil {
+	if err := MakeDirAll(newpath); err != nil {
 		return err
 	}
 
