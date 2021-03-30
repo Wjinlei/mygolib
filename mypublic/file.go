@@ -2,8 +2,6 @@ package mypublic
 
 import (
 	"bufio"
-	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -33,31 +31,18 @@ func DownloadFile(url string, path string) error {
 	return nil
 }
 
-// DeleteFile 删除文件,如果是一个目录,那只能删除空目录
-func DeleteFile(path string) error {
-	if err := os.Remove(path); err != nil {
+// WriteFile 写入字符串到文件
+func WriteFile(filepath string, content string) error {
+	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
 		return err
 	}
+	defer file.Close()
+	file.WriteString(content)
 	return nil
 }
 
-// DeleteFileAll 删除文件,如果是一个目录,则会删除该目录及其内部所有
-func DeleteFileAll(path string) error {
-	if err := os.RemoveAll(path); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MoveFile 移动或重命名文件
-func MoveFile(oldpath string, newpath string) error {
-	if err := os.Rename(oldpath, newpath); err != nil {
-		return err
-	}
-	return nil
-}
-
-// CopyFile 复制文件
+// CopyFile 复制文件,如果已存在会覆盖
 func CopyFile(oldpath string, newpath string) error {
 	// 源文件
 	oldfile, err := os.Open(oldpath)
@@ -67,8 +52,7 @@ func CopyFile(oldpath string, newpath string) error {
 	defer oldfile.Close()
 
 	// 创建目标文件夹
-	err = MakeDirAll(oldpath)
-	if err != nil {
+	if err := MakeDirAll(oldpath); err != nil {
 		return err
 	}
 
@@ -86,9 +70,9 @@ func CopyFile(oldpath string, newpath string) error {
 	}
 
 	// 设置新文件的权限
-	oldInfo, err := os.Stat(oldpath)
+	oldStat, err := os.Stat(oldpath)
 	if err != nil {
-		err = os.Chmod(newpath, oldInfo.Mode())
+		err = os.Chmod(newpath, oldStat.Mode())
 		if err != nil {
 			return err
 		}
@@ -97,73 +81,27 @@ func CopyFile(oldpath string, newpath string) error {
 	return nil
 }
 
-// CopyDir 复制目录
-func CopyDir(oldpath string, newpath string) error {
-	// 获取源目录信息
-	oldfileStat, err := os.Stat(oldpath)
-	if err != nil {
+// MoveFile 移动或重命名文件,如果已存在会覆盖
+func MoveFile(oldpath string, newpath string) error {
+	if err := CopyFile(oldpath, newpath); err != nil {
 		return err
 	}
+	return DeleteFile(oldpath)
+}
 
-	// 创建目标目录
-	err = os.MkdirAll(newpath, oldfileStat.Mode())
-	if err != nil {
+// DeleteFile 删除文件,如果是一个目录,那只能删除空目录
+func DeleteFile(path string) error {
+	if err := os.Remove(path); err != nil {
 		return err
 	}
-
-	// 打开源目录
-	olddir, err := os.Open(oldpath)
-	if err != nil {
-		return err
-	}
-	defer olddir.Close()
-
-	// 读取目录中的文件信息
-	fileStats, err := olddir.Readdir(-1)
-	if err != nil {
-		return err
-	}
-
-	var errs []error // 用来保存错误
-
-	for _, fileStat := range fileStats {
-		fsrc := fmt.Sprintf("%s/%s", oldpath, fileStat.Name())
-		fdst := fmt.Sprintf("%s/%s", newpath, fileStat.Name())
-		if fileStat.IsDir() {
-			// 递归创建子目录
-			err = CopyDir(fsrc, fdst)
-			if err != nil {
-				errs = append(errs, err)
-			}
-		} else {
-			// 复制文件
-			err = CopyFile(fsrc, fdst)
-			if err != nil {
-				errs = append(errs, err)
-			}
-		}
-	}
-
-	// 处理错误信息
-	var errString string
-	for _, err := range errs {
-		errString += err.Error() + "\n"
-	}
-	if errString != "" {
-		return errors.New(errString)
-	}
-
 	return nil
 }
 
-// WriteFile 写入字符串到文件
-func WriteFile(filepath string, content string) error {
-	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
+// DeleteFileAll 删除文件,如果是一个目录,则会删除该目录及其内部所有
+func DeleteFileAll(path string) error {
+	if err := os.RemoveAll(path); err != nil {
 		return err
 	}
-	defer file.Close()
-	file.WriteString(content)
 	return nil
 }
 
