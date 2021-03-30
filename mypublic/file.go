@@ -13,6 +13,28 @@ import (
 	"strings"
 )
 
+// DownloadFile 下载文件
+func DownloadFile(url string, path string) error {
+	MakeDirAll(path)
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	// 目标文件
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	// 保存响应数据到文件
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // WriteFile 创建文件
 func WriteFile(filepath string, content string) error {
 	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -45,44 +67,19 @@ func MakeDirAll(filepath string) error {
 	return nil
 }
 
-// 判断目录大小
-func DirSize(path string) (int64, error) {
-	var size int64
-	if !Exists(path) {
-		return 0, fmt.Errorf("目录不存在")
-	}
-	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			size += info.Size()
-		}
-		return err
-	})
-	if err != nil {
-		return 0, err
-	}
-	return size, nil
+// Delete 删除文件或目录,如果是目录,只能删除空目录
+func Delete(path string) error {
+	return os.Remove(path)
 }
 
-// DownloadFile 下载文件
-func DownloadFile(url string, path string) error {
-	MakeDirAll(path)
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	// 目标文件
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	// 保存响应数据到文件
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		return err
-	}
-	return nil
+// DeleteAll 删除文件或目录
+func DeleteAll(path string) error {
+	return os.RemoveAll(path)
+}
+
+// Move 移动文件或目录,如果目标已存在,并且不是目录,则会覆盖
+func Move(oldpath string, newpath string) error {
+	return os.Rename(oldpath, newpath)
 }
 
 // 复制文件或目录
@@ -197,103 +194,6 @@ func CopyDir(oldpath string, newpath string) error {
 	return nil
 }
 
-// 移动文件或目录
-func Move(oldpath string, newpath string) error {
-	oldfileStat, err := os.Stat(oldpath)
-	if err != nil {
-		return err
-	}
-	if oldfileStat.IsDir() {
-		return MoveDir(oldpath, newpath)
-	} else {
-		return MoveFile(oldpath, newpath)
-	}
-}
-
-// MoveFile 移动或重命名文件,如果已存在会覆盖
-func MoveFile(oldpath string, newpath string) error {
-	if err := CopyFile(oldpath, newpath); err != nil {
-		return err
-	}
-	return DeleteFile(oldpath)
-}
-
-// MoveDir 移动目录
-func MoveDir(oldpath string, newpath string) error {
-	// 获取源目录信息
-	oldfileStat, err := os.Stat(oldpath)
-	if err != nil {
-		return err
-	}
-
-	// 创建目标目录
-	if err := os.MkdirAll(newpath, oldfileStat.Mode()); err != nil {
-		return err
-	}
-
-	// 打开源目录
-	olddir, err := os.Open(oldpath)
-	if err != nil {
-		return err
-	}
-	defer olddir.Close()
-
-	// 读取目录中的文件信息
-	fileStats, err := olddir.Readdir(-1)
-	if err != nil {
-		return err
-	}
-
-	var errs []error // 用来保存错误
-
-	// 处理目录下的内容
-	for _, fileStat := range fileStats {
-		fsrc := fmt.Sprintf("%s/%s", oldpath, fileStat.Name())
-		fdst := fmt.Sprintf("%s/%s", newpath, fileStat.Name())
-		if fileStat.IsDir() {
-			// 递归创建子目录
-			err = MoveDir(fsrc, fdst)
-			if err != nil {
-				errs = append(errs, err)
-			}
-		} else {
-			// 复制文件
-			err = MoveFile(fsrc, fdst)
-			if err != nil {
-				errs = append(errs, err)
-			}
-		}
-	}
-
-	// 处理错误信息
-	var errString string
-	for _, err := range errs {
-		errString += err.Error() + "\n"
-	}
-	// 如果有错误,就打包返回
-	if errString != "" {
-		return errors.New(errString)
-	}
-
-	return nil
-}
-
-// DeleteFile 删除文件,如果是一个目录,那只能删除空目录
-func DeleteFile(path string) error {
-	if err := os.Remove(path); err != nil {
-		return err
-	}
-	return nil
-}
-
-// DeleteFileAll 删除文件,如果是一个目录,则会删除该目录及其内部所有
-func DeleteFileAll(path string) error {
-	if err := os.RemoveAll(path); err != nil {
-		return err
-	}
-	return nil
-}
-
 // ReadFile 读取文件内容
 func ReadFile(filename string) (string, error) {
 	content, err := ioutil.ReadFile(filename)
@@ -328,6 +228,24 @@ func ReadLinesOffsetN(filename string, offset uint, n int) ([]string, error) {
 		ret = append(ret, strings.Trim(line, "\n"))
 	}
 	return ret, nil
+}
+
+// 判断目录大小
+func DirSize(path string) (int64, error) {
+	var size int64
+	if !Exists(path) {
+		return 0, fmt.Errorf("目录不存在")
+	}
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	if err != nil {
+		return 0, err
+	}
+	return size, nil
 }
 
 // 判断所给路径是否为文件
