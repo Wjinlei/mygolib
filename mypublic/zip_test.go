@@ -3,13 +3,13 @@ package mypublic
 import "testing"
 
 func TestTGZ(t *testing.T) {
-	if err := TGZ("/home/wangjl/tmps/testgo/example.txt", "example.tar.gz"); err != nil {
+	if err := TGZ("/home/wangjl/tmps/testgo/example.txt", "example.tgz"); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestZIP(t *testing.T) {
-	if err := ZIP("file.go", "file.zip", "GBK"); err != nil {
+	if err := ZIP("/home/wangjl/tmps/testgo/example.txt", "example.zip", "GBK"); err != nil {
 		t.Error(err)
 	}
 }

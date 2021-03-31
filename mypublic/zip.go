@@ -171,7 +171,8 @@ func ZIP(srcpath, dstpath, encoding string) error {
 	defer srcfile.Close()
 
 	// Get FileInfo about our file providing file size, mode, etc.
-	srcinfo, err := srcfile.Stat()
+	srcinfo, err := os.Lstat(srcpath)
+	//srcinfo, err := srcfile.Stat()
 	if err != nil {
 		return err
 	}
@@ -184,7 +185,11 @@ func ZIP(srcpath, dstpath, encoding string) error {
 				if err != nil {
 					return err
 				}
-				// Set Header
+
+				// Use full path as name (FileInfoHeader only takes the basename)
+				// If we don't do this the directory strucuture would
+				// not be preserved
+				// https://golang.org/src/archive/tar/common.go?#L626
 				header.Name = strings.TrimPrefix(path, fmt.Sprintf("%s/", srcpath))
 				header.Name = encoder.ConvertString(header.Name)
 				if pathinfo.IsDir() {
@@ -196,15 +201,31 @@ func ZIP(srcpath, dstpath, encoding string) error {
 						return err
 					}
 					defer pathfile.Close()
-					// Create file Header
-					pathWriter, err := zw.CreateHeader(header)
+
+					// Readlink
+					symlink, err := os.Readlink(path)
 					if err != nil {
-						return err
-					}
-					// Copy file content to tar archive
-					_, err = io.Copy(pathWriter, pathfile)
-					if err != nil {
-						return err
+						// Create file Header
+						pathWriter, err := zw.CreateHeader(header)
+						if err != nil {
+							return err
+						}
+						// Copy file content to tar archive
+						_, err = io.Copy(pathWriter, pathfile)
+						if err != nil {
+							return err
+						}
+					} else {
+						header.SetMode(os.ModeSymlink)
+						// Create file Header
+						pathWriter, err := zw.CreateHeader(header)
+						if err != nil {
+							return err
+						}
+						_, err = pathWriter.Write([]byte(symlink))
+						if err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -216,17 +237,37 @@ func ZIP(srcpath, dstpath, encoding string) error {
 		if err != nil {
 			return err
 		}
-		// Set Header
-		header.Name = encoder.ConvertString(srcpath)
-		// Create file Header
-		destWriter, err := zw.CreateHeader(header)
+
+		// Use full path as name (FileInfoHeader only takes the basename)
+		// If we don't do this the directory strucuture would
+		// not be preserved
+		// https://golang.org/src/archive/tar/common.go?#L626
+		//header.Name = encoder.ConvertString(header.Name)
+
+		// Readlink
+		symlink, err := os.Readlink(srcpath)
 		if err != nil {
-			return err
-		}
-		// Copy file content to tar archive
-		_, err = io.Copy(destWriter, srcfile)
-		if err != nil {
-			return err
+			// Create file Header
+			pathWriter, err := zw.CreateHeader(header)
+			if err != nil {
+				return err
+			}
+			// Copy file content to tar archive
+			_, err = io.Copy(pathWriter, srcfile)
+			if err != nil {
+				return err
+			}
+		} else {
+			header.SetMode(os.ModeSymlink)
+			// Create file Header
+			pathWriter, err := zw.CreateHeader(header)
+			if err != nil {
+				return err
+			}
+			_, err = pathWriter.Write([]byte(symlink))
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
