@@ -51,7 +51,7 @@ func TestMoveFile(t *testing.T) {
 }
 
 func TestCopyFile(t *testing.T) {
-	if err := Copy("./file.go", "./file.go.bak"); err != nil {
+	if err := Copy("file.go", "file.go.bak"); err != nil {
 		t.Error(err)
 	}
 }

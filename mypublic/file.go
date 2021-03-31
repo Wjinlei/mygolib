@@ -82,11 +82,11 @@ func Move(oldpath string, newpath string) error {
 
 // 复制文件或目录
 func Copy(oldpath string, newpath string) error {
-	oldfileStat, err := os.Stat(oldpath)
+	oldfileInfo, err := os.Lstat(oldpath)
 	if err != nil {
 		return err
 	}
-	if oldfileStat.IsDir() {
+	if oldfileInfo.IsDir() {
 		return copyD(oldpath, newpath)
 	} else {
 		return copyF(oldpath, newpath)
@@ -145,7 +145,7 @@ func DirSize(path string) (int64, error) {
 }
 
 func IsDir(path string) bool {
-	s, err := os.Stat(path)
+	s, err := os.Lstat(path)
 	if err != nil {
 		return false
 	}
@@ -154,38 +154,40 @@ func IsDir(path string) bool {
 
 // copyF 复制文件
 func copyF(oldpath string, newpath string) error {
-	// 源文件
-	oldfile, err := os.Open(oldpath)
+	_, err := os.Readlink(oldpath)
 	if err != nil {
-		return err
-	}
-	defer oldfile.Close()
+		// 源文件
+		oldfile, err := os.Open(oldpath)
+		if err != nil {
+			return err
+		}
+		defer oldfile.Close()
 
-	// 目标文件
-	newfile, err := os.OpenFile(newpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		return err
-	}
-	defer newfile.Close()
+		// 目标文件
+		newfile, err := os.OpenFile(newpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			return err
+		}
+		defer newfile.Close()
 
-	// 保存响应数据到文件
-	_, err = io.Copy(newfile, oldfile)
-	if err != nil {
-		return err
+		// 保存响应数据到文件
+		_, err = io.Copy(newfile, oldfile)
+		if err != nil {
+			return err
+		}
+	} else {
+		err := os.Link(oldpath, newpath)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 // copyD 复制目录
 func copyD(oldpath string, newpath string) error {
-	// 获取源目录信息
-	oldfileStat, err := os.Stat(oldpath)
-	if err != nil {
-		return err
-	}
-
 	// 创建目标目录
-	if err := os.MkdirAll(newpath, oldfileStat.Mode()); err != nil {
+	if err := MakeDir(newpath); err != nil {
 		return err
 	}
 
