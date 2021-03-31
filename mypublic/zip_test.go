@@ -3,7 +3,7 @@ package mypublic
 import "testing"
 
 func TestTGZ(t *testing.T) {
-	if err := TGZ("file.go", "file.tar.gz"); err != nil {
+	if err := TGZ("/home/wangjl/tmps/testgo/example.txt", "example.tar.gz"); err != nil {
 		t.Error(err)
 	}
 }

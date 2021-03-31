@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/axgle/mahonia"
+	"github.com/Wjinlei/mygolib/myencode"
 	"github.com/yeka/zip"
 )
 
@@ -40,7 +40,8 @@ func TGZ(srcpath, dstpath string) error {
 	defer srcfile.Close()
 
 	// Get FileInfo about our file providing file size, mode, etc.
-	srcinfo, err := srcfile.Stat()
+	srcinfo, err := os.Lstat(srcpath)
+	//srcinfo, err := srcfile.Stat()
 	if err != nil {
 		return err
 	}
@@ -66,16 +67,31 @@ func TGZ(srcpath, dstpath string) error {
 					}
 					defer pathfile.Close()
 
-					// Write file header to the tar archive
-					err = tw.WriteHeader(header)
+					symlink, err := os.Readlink(path)
 					if err != nil {
-						return err
-					}
-
-					// Copy file content to tar archive
-					_, err = io.Copy(tw, pathfile)
-					if err != nil {
-						return err
+						// Write file header to the tar archive
+						err = tw.WriteHeader(header)
+						if err != nil {
+							return err
+						}
+						// Copy file content to tar archive
+						_, err = io.Copy(tw, pathfile)
+						if err != nil {
+							return err
+						}
+					} else {
+						// Set symlink name
+						header.Linkname = symlink
+						// Write file header to the tar archive
+						err = tw.WriteHeader(header)
+						if err != nil {
+							return err
+						}
+						// Write ""
+						_, err = tw.Write([]byte(""))
+						if err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -92,18 +108,34 @@ func TGZ(srcpath, dstpath string) error {
 		// If we don't do this the directory strucuture would
 		// not be preserved
 		// https://golang.org/src/archive/tar/common.go?#L626
-		header.Name = srcpath
+		//header.Name = srcpath
 
-		// Write file header to the tar archive
-		err = tw.WriteHeader(header)
+		symlink, err := os.Readlink(srcpath)
 		if err != nil {
-			return err
-		}
+			// Write file header to the tar archive
+			err = tw.WriteHeader(header)
+			if err != nil {
+				return err
+			}
 
-		// Copy file content to tar archive
-		_, err = io.Copy(tw, srcfile)
-		if err != nil {
-			return err
+			// Copy file content to tar archive
+			_, err = io.Copy(tw, srcfile)
+			if err != nil {
+				return err
+			}
+		} else {
+			// Set symlink name
+			header.Linkname = symlink
+			// Write file header to the tar archive
+			err = tw.WriteHeader(header)
+			if err != nil {
+				return err
+			}
+			// Write ""
+			_, err = tw.Write([]byte(""))
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -112,7 +144,7 @@ func TGZ(srcpath, dstpath string) error {
 // ZIP zip压缩,支持设置文件名编码,Windows一般设置为GBK
 func ZIP(srcpath, dstpath, encoding string) error {
 	// encoder
-	encoder := mahonia.NewEncoder(encoding)
+	encoder := myencode.GetEncoder(encoding)
 	if encoder == nil {
 		return errors.New("encoding error")
 	}
@@ -202,12 +234,14 @@ func ZIP(srcpath, dstpath, encoding string) error {
 
 // ZIPDecrypt 解压缩
 func ZIPDecrypt(srcpath, destpath, password, charset string) error {
-	encoder := mahonia.NewEncoder(charset)
+	encoder := myencode.GetEncoder(charset)
+	//encoder := mahonia.NewEncoder(charset)
 	if encoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
 	password = encoder.ConvertString(password)
-	decoder := mahonia.NewDecoder(charset)
+	decoder := myencode.GetDecoder(charset)
+	//decoder := mahonia.NewDecoder(charset)
 	if decoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
