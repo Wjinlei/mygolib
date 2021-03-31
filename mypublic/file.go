@@ -154,7 +154,7 @@ func IsDir(path string) bool {
 
 // copyF 复制文件
 func copyF(oldpath string, newpath string) error {
-	_, err := os.Readlink(oldpath)
+	symlink, err := os.Readlink(oldpath)
 	if err != nil {
 		// 源文件
 		oldfile, err := os.Open(oldpath)
@@ -176,7 +176,7 @@ func copyF(oldpath string, newpath string) error {
 			return err
 		}
 	} else {
-		err := os.Link(oldpath, newpath)
+		err := os.Symlink(symlink, newpath)
 		if err != nil {
 			return err
 		}
