@@ -55,6 +55,7 @@ func TGZ(srcpath, dstpath string) error {
 					return err
 				}
 
+				// Handle path
 				header.Name = strings.TrimPrefix(path, fmt.Sprintf("%s/", srcpath))
 
 				if pathinfo.IsDir() {
@@ -186,10 +187,7 @@ func ZIP(srcpath, dstpath, encoding string) error {
 					return err
 				}
 
-				// Use full path as name (FileInfoHeader only takes the basename)
-				// If we don't do this the directory strucuture would
-				// not be preserved
-				// https://golang.org/src/archive/tar/common.go?#L626
+				// Handle path
 				header.Name = strings.TrimPrefix(path, fmt.Sprintf("%s/", srcpath))
 				header.Name = encoder.ConvertString(header.Name)
 				if pathinfo.IsDir() {
