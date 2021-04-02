@@ -19,6 +19,10 @@ func DownloadFile(url string, path string) error {
 		return err
 	}
 	defer resp.Body.Close()
+	// 创建目录
+	if err := MakeDirAll(path); err != nil {
+		return err
+	}
 	// 目标文件
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
