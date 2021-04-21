@@ -277,46 +277,56 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	if encoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
-	password = encoder.ConvertString(password)
 	decoder := myencode.GetDecoder(charset)
 	if decoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
+	password = encoder.ConvertString(password)
+
 	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {
 		return err
 	}
 	defer readCloser.Close()
+
 	destpath = strings.TrimRight(destpath, "/")
+
 	for _, file := range readCloser.File {
-		filepath := destpath + "/" + decoder.ConvertString(file.Name)
-		if file.FileInfo().IsDir() {
-			if err := MakeDir(filepath); err != nil {
-				return err
-			}
-			continue
-		}
 		if file.IsEncrypted() {
 			file.SetPassword(password)
 		}
+
+		// 获取目标路径
+		filepath := destpath + "/" + decoder.ConvertString(file.Name)
+
+		// 创建目标上级目录
+		err = MakeDirAll(filepath)
+		if err != nil {
+			return err
+		}
+
+		// 打开原文件
 		src, err := file.Open()
 		if err != nil {
+			return err
+		}
+
+		// 创建目标文件
+		dst, err := os.Create(filepath)
+		if err != nil {
 			src.Close()
 			return err
 		}
-		dest, err := os.Create(filepath)
-		if err != nil {
-			dest.Close()
-			return err
-		}
-		_, err = io.Copy(dest, src)
+
+		// 写入数据
+		_, err = io.Copy(dst, src)
 		if err != nil {
 			src.Close()
-			dest.Close()
+			dst.Close()
 			return err
 		}
 		src.Close()
-		dest.Close()
+		dst.Close()
 	}
 	return nil
 }
@@ -352,21 +362,29 @@ func TGZDecrypt(srcpath, destpath, charset string) error {
 				return err
 			}
 		}
+
+		// 获取目标路径
 		filepath := destpath + "/" + decoder.ConvertString(file.Name)
-		if file.FileInfo().IsDir() {
-			if err := MakeDir(filepath); err != nil {
-				return err
-			}
-			continue
-		}
-		destfile, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+
+		// 创建目标的上级目录
+		err = MakeDirAll(filepath)
 		if err != nil {
 			return err
 		}
+
+		// 创建目标文件
+		destfile, err := os.Create(filepath)
+		if err != nil {
+			return err
+		}
+
+		// 写入数据
 		_, err = io.Copy(destfile, tr)
 		if err != nil {
+			destfile.Close()
 			return err
 		}
+		destfile.Close()
 	}
 	return nil
 }

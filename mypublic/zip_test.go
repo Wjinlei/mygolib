@@ -15,13 +15,13 @@ func TestZIP(t *testing.T) {
 }
 
 func TestZIPDecrypt(t *testing.T) {
-	if err := ZIPDecrypt("test.zip", "/tmp", "", "gbk"); err != nil {
+	if err := ZIPDecrypt("test.zip", "/tmp/test", "", "gbk"); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestTGZDecrypt(t *testing.T) {
-	if err := TGZDecrypt("test.tar.gz", "/tmp", "utf8"); err != nil {
+	if err := TGZDecrypt("test.tar.gz", "/tmp/test", "utf8"); err != nil {
 		t.Error(err)
 	}
 }
