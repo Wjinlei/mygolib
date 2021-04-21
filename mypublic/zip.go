@@ -299,10 +299,12 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		// 获取目标路径
 		filepath := destpath + "/" + decoder.ConvertString(file.Name)
 
-		// 创建目标上级目录
-		err = MakeDirAll(filepath)
-		if err != nil {
-			return err
+		// 创建目录
+		if file.FileInfo().IsDir() {
+			if err := MakeDir(filepath); err != nil {
+				return err
+			}
+			continue
 		}
 
 		// 打开原文件
@@ -366,10 +368,12 @@ func TGZDecrypt(srcpath, destpath, charset string) error {
 		// 获取目标路径
 		filepath := destpath + "/" + decoder.ConvertString(file.Name)
 
-		// 创建目标的上级目录
-		err = MakeDirAll(filepath)
-		if err != nil {
-			return err
+		// 创建目录
+		if file.FileInfo().IsDir() {
+			if err := MakeDir(filepath); err != nil {
+				return err
+			}
+			continue
 		}
 
 		// 创建目标文件
