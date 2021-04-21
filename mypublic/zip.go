@@ -47,15 +47,6 @@ func TGZ(srcpath, dstpath string) error {
 	}
 
 	if srcinfo.IsDir() {
-		// 写根路径信息头
-		root, err := tar.FileInfoHeader(srcinfo, srcinfo.Name())
-		if err != nil {
-			return err
-		}
-		err = tw.WriteHeader(root)
-		if err != nil {
-			return err
-		}
 		filepath.Walk(srcpath, func(path string, pathinfo os.FileInfo, err error) error {
 			if path != srcpath {
 				// Create a tar Header from the FileInfo data
