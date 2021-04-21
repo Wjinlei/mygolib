@@ -274,13 +274,11 @@ func ZIP(srcpath, dstpath, encoding string) error {
 // ZIPDecrypt 解压缩
 func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	encoder := myencode.GetEncoder(charset)
-	//encoder := mahonia.NewEncoder(charset)
 	if encoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
 	password = encoder.ConvertString(password)
 	decoder := myencode.GetDecoder(charset)
-	//decoder := mahonia.NewDecoder(charset)
 	if decoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
@@ -319,6 +317,56 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		}
 		src.Close()
 		dest.Close()
+	}
+	return nil
+}
+
+// TGZDecrypt tar.gz解压缩
+func TGZDecrypt(srcpath, destpath, charset string) error {
+	decoder := myencode.GetDecoder(charset)
+	if decoder == nil {
+		return fmt.Errorf("Charset error: [%s]", charset)
+	}
+
+	srcfile, err := os.Open(srcpath)
+	if err != nil {
+		return err
+	}
+	defer srcfile.Close()
+
+	gr, err := gzip.NewReader(srcfile)
+	if err != nil {
+		return err
+	}
+	defer gr.Close()
+	tr := tar.NewReader(gr)
+
+	destpath = strings.TrimRight(destpath, "/")
+
+	for {
+		file, err := tr.Next()
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				return err
+			}
+		}
+		filepath := destpath + "/" + decoder.ConvertString(file.Name)
+		if file.FileInfo().IsDir() {
+			if err := MakeDir(filepath); err != nil {
+				return err
+			}
+			continue
+		}
+		destfile, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			return err
+		}
+		_, err = io.Copy(destfile, tr)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
