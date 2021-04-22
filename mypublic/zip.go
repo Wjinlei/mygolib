@@ -196,6 +196,10 @@ func ZIP(srcpath, dstpath, encoding string) error {
 				header.Name = encoder.ConvertString(header.Name)
 				if pathinfo.IsDir() {
 					header.Name = fmt.Sprintf("%s/", header.Name)
+					_, err := zw.CreateHeader(header)
+					if err != nil {
+						return err
+					}
 				} else {
 					// Open the file which will be written into the archive
 					pathfile, err := os.Open(path)
