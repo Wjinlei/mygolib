@@ -137,9 +137,6 @@ func ReadLinesOffsetN(filename string, offset uint, n int) ([]string, error) {
 func DirSize(path string) (int64, error) {
 	var size int64
 	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
 		if !info.IsDir() {
 			size += info.Size()
 		}
@@ -149,6 +146,25 @@ func DirSize(path string) (int64, error) {
 		return 0, err
 	}
 	return size, nil
+}
+
+func DirSizeEx(path string) (int, int, int64, error) {
+	var dnum int
+	var fnum int
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			fnum = fnum + 1
+			size += info.Size()
+		} else {
+			dnum = dnum + 1
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	return dnum, fnum, size, nil
 }
 
 func IsDir(path string) bool {
