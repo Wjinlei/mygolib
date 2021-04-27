@@ -138,7 +138,11 @@ func DirSize(path string) (int64, error) {
 	var size int64
 	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			if os.IsNotExist(err) {
+				return nil
+			} else {
+				return err
+			}
 		}
 		if !info.IsDir() {
 			size += info.Size()
@@ -157,7 +161,11 @@ func DirSizeEx(path string) (int, int, int64, error) {
 	var size int64
 	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			if os.IsNotExist(err) {
+				return nil
+			} else {
+				return err
+			}
 		}
 		if !info.IsDir() {
 			fnum = fnum + 1
