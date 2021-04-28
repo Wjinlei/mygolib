@@ -145,7 +145,9 @@ func DirSize(path string) (int64, error) {
 			}
 		}
 		if !info.IsDir() {
-			size += info.Size()
+			if info.Mode().IsRegular() {
+				size += info.Size()
+			}
 		}
 		return nil
 	})
@@ -169,7 +171,9 @@ func DirSizeEx(path string) (int, int, int64, error) {
 		}
 		if !info.IsDir() {
 			fnum = fnum + 1
-			size += info.Size()
+			if info.Mode().IsRegular() {
+				size += info.Size()
+			}
 		} else {
 			dnum = dnum + 1
 		}
