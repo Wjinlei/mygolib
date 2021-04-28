@@ -136,7 +136,7 @@ func ReadLinesOffsetN(filename string, offset uint, n int) ([]string, error) {
 // DirSize 获取目录大小
 func DirSize(path string) (int64, error) {
 	var size int64
-	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+	err := filepath.Walk(path, func(fullpath string, info os.FileInfo, err error) error {
 		if err != nil {
 			if os.IsNotExist(err) {
 				return nil
@@ -145,6 +145,10 @@ func DirSize(path string) (int64, error) {
 			}
 		}
 		if !info.IsDir() {
+			// 跳过/proc/kcore
+			if fullpath == "/proc/kcore" {
+				return nil
+			}
 			if info.Mode().IsRegular() {
 				size += info.Size()
 			}
@@ -161,7 +165,7 @@ func DirSizeEx(path string) (int, int, int64, error) {
 	var dnum int
 	var fnum int
 	var size int64
-	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+	err := filepath.Walk(path, func(fullpath string, info os.FileInfo, err error) error {
 		if err != nil {
 			if os.IsNotExist(err) {
 				return nil
@@ -171,6 +175,10 @@ func DirSizeEx(path string) (int, int, int64, error) {
 		}
 		if !info.IsDir() {
 			fnum = fnum + 1
+			// 跳过/proc/kcore
+			if fullpath == "/proc/kcore" {
+				return nil
+			}
 			if info.Mode().IsRegular() {
 				size += info.Size()
 			}
