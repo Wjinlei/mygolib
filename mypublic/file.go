@@ -306,8 +306,7 @@ func ParseMode(m os.FileMode) (user, group, other int) {
 				case 'x':
 					user = user + 1
 				}
-			}
-			if i >= 3 && i <= 5 {
+			} else if i >= 3 && i <= 5 {
 				// 中间三个表示group的权限
 				switch byte(c) {
 				case 'r':
@@ -317,8 +316,7 @@ func ParseMode(m os.FileMode) (user, group, other int) {
 				case 'x':
 					group = group + 1
 				}
-			}
-			if i >= 6 && i <= 8 {
+			} else if i >= 6 && i <= 8 {
 				// 后三个表示other的权限
 				switch byte(c) {
 				case 'r':
