@@ -1,6 +1,8 @@
 package mypublic
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"testing"
 )
@@ -54,4 +56,13 @@ func TestCopyFile(t *testing.T) {
 	if err := Copy("file.go", "file.go.bak"); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestParseMode(t *testing.T) {
+	stat, err := os.Stat("file.go")
+	if err != nil {
+		t.Error(err)
+	}
+	u, g, o := ParseMode(stat.Mode())
+	fmt.Printf("%d%d%d\n", u, g, o)
 }

@@ -277,3 +277,63 @@ func copyD(oldpath string, newpath string) error {
 	}
 	return nil
 }
+
+func ParseMode(m os.FileMode) (user, group, other int) {
+	const str = "dalTLDpSugct?"
+	var buf [32]byte // Mode is uint32.
+	w := 0
+	for i, c := range str {
+		if m&(1<<uint(32-1-i)) != 0 {
+			buf[w] = byte(c)
+			w++
+		}
+	}
+	if w == 0 {
+		buf[w] = '-'
+		w++
+	}
+	const rwx = "rwxrwxrwx"
+
+	for i, c := range rwx {
+		if m&(1<<uint(9-1-i)) != 0 {
+			if i <= 2 {
+				// 前三个表示user的权限
+				switch byte(c) {
+				case 'r':
+					user = user + 4
+				case 'w':
+					user = user + 2
+				case 'x':
+					user = user + 1
+				}
+			}
+			if i >= 3 && i <= 5 {
+				// 中间三个表示group的权限
+				switch byte(c) {
+				case 'r':
+					group = group + 4
+				case 'w':
+					group = group + 2
+				case 'x':
+					group = group + 1
+				}
+			}
+			if i >= 6 && i <= 8 {
+				// 后三个表示other的权限
+				switch byte(c) {
+				case 'r':
+					other = other + 4
+				case 'w':
+					other = other + 2
+				case 'x':
+					other = other + 1
+				}
+			}
+			buf[w] = byte(c)
+		} else {
+			buf[w] = '-'
+		}
+		w++
+	}
+	return user, group, other
+}
