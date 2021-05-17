@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -334,4 +335,22 @@ func ParseMode(m os.FileMode) (user, group, other int) {
 		w++
 	}
 	return user, group, other
+}
+
+func Chmod(path string, mode fs.FileMode, recursive bool) error {
+	if recursive {
+		fileStat, err := os.Lstat(path)
+		if err != nil {
+			return err
+		}
+		if fileStat.IsDir() {
+			filepath.Walk(path, func(p string, pathinfo os.FileInfo, err error) error {
+				if p != path {
+					return Chmod(p, mode, recursive)
+				}
+				return nil
+			})
+		}
+	}
+	return os.Chmod(path, mode)
 }

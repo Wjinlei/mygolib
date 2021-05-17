@@ -66,3 +66,9 @@ func TestParseMode(t *testing.T) {
 	u, g, o := ParseMode(stat.Mode())
 	fmt.Printf("%d%d%d\n", u, g, o)
 }
+
+func TestChmod(t *testing.T) {
+	if err := Chmod("/home/wangjl/tmps/dockerfiles", 0777, true); err != nil {
+		t.Error(err)
+	}
+}
