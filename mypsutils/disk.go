@@ -30,8 +30,8 @@ func GetUsage(path string) (*ResStat, error) {
 }
 
 // GetPartitions 获取磁盘分区
-func GetPartitions() ([]disk.PartitionStat, error) {
-	ret, err := disk.Partitions(false)
+func GetPartitions(all bool) ([]disk.PartitionStat, error) {
+	ret, err := disk.Partitions(all)
 	if err != nil {
 		return nil, err
 	}
