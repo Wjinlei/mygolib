@@ -298,7 +298,7 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("你的内存不足")
+			fmt.Println(r)
 		}
 	}()
 
