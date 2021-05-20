@@ -9,10 +9,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/Wjinlei/mygolib/myencode"
 	"github.com/yeka/zip"
 )
+
+var wg sync.WaitGroup
 
 // TGZ tar.gz压缩
 func TGZ(srcpath, dstpath string) error {
@@ -281,6 +284,7 @@ func ZIP(srcpath, dstpath, encoding string) error {
 
 // ZIPDecrypt 解压缩
 func ZIPDecrypt(srcpath, destpath, password, charset string) error {
+	var errs []string
 	encoder := myencode.GetEncoder(charset)
 	if encoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
@@ -297,46 +301,57 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	}
 	defer readCloser.Close()
 
-	destpath = strings.TrimRight(destpath, "/")
+	destpath = GetPath(destpath)
 
-	for _, file := range readCloser.File {
-		if file.IsEncrypted() {
-			file.SetPassword(password)
-		}
-
-		// 获取目标路径
-		filepath := destpath + "/" + decoder.ConvertString(file.Name)
-
-		// 创建目录
-		if file.FileInfo().IsDir() {
-			if err := MakeDir(filepath); err != nil {
-				return err
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, file := range readCloser.File {
+			//  设置解压密码
+			if file.IsEncrypted() {
+				file.SetPassword(password)
 			}
-			continue
-		}
 
-		// 打开原文件
-		src, err := file.Open()
-		if err != nil {
-			return err
-		}
+			// 创建目录
+			filepath := fmt.Sprintf("%s/%s",
+				destpath, decoder.ConvertString(file.Name))
+			if file.FileInfo().IsDir() {
+				if err := MakeDir(filepath); err != nil {
+					errs = append(errs, err.Error())
+				}
+				continue
+			}
 
-		// 创建目标文件
-		dst, err := os.Create(filepath)
-		if err != nil {
-			src.Close()
-			return err
-		}
+			// 打开原文件
+			src, err := file.Open()
+			if err != nil {
+				errs = append(errs, err.Error())
+				continue
+			}
 
-		// 写入数据
-		_, err = io.Copy(dst, src)
-		if err != nil {
+			// 创建目标文件
+			dst, err := os.Create(filepath)
+			if err != nil {
+				errs = append(errs, err.Error())
+				src.Close()
+				continue
+			}
+
+			// 写入数据
+			_, err = io.Copy(dst, src)
+			if err != nil {
+				errs = append(errs, err.Error())
+				src.Close()
+				dst.Close()
+				continue
+			}
 			src.Close()
 			dst.Close()
-			return err
 		}
-		src.Close()
-		dst.Close()
+	}()
+	wg.Wait()
+	if len(errs) > 0 {
+		return fmt.Errorf(strings.Join(errs, "\n"))
 	}
 	return nil
 }

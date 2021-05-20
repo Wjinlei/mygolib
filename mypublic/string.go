@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -100,4 +101,20 @@ func CreateRandomString(len int) string {
 		container += string(str[randomInt.Int64()])
 	}
 	return container
+}
+
+func GetPath(path string) string {
+	// 把正斜杠替换为反斜杠
+	path = strings.ReplaceAll(path, "\\", "/")
+	// 正则匹配规则
+	re, _ := regexp.Compile("/+")
+	// 替换多个"///"为一个"/"
+	path = re.ReplaceAllLiteralString(path, "/")
+	// 取出最右边(末尾)的所有"/"
+	path = strings.TrimRight(path, "/")
+	// 如果最终结果为"",则返回"/"
+	if path == "" {
+		path = "/"
+	}
+	return path
 }
