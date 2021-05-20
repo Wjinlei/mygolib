@@ -2,6 +2,7 @@ package mypublic
 
 import (
 	"archive/tar"
+	"archive/zip"
 	"compress/gzip"
 	"errors"
 	"fmt"
@@ -12,7 +13,6 @@ import (
 	"sync"
 
 	"github.com/Wjinlei/mygolib/myencode"
-	"github.com/yeka/zip"
 )
 
 var wg sync.WaitGroup
@@ -297,25 +297,11 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	password = encoder.ConvertString(password)
 
 	// 读取源文件
-	fmt.Println("OpenReader")
-	f, err := os.Open(srcpath)
+	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {
 		return err
 	}
-	fi, err := f.Stat()
-	if err != nil {
-		f.Close()
-		return err
-	}
-	readCloser, err := zip.NewReader(f, fi.Size())
-
-	/*
-		readCloser, err := zip.OpenReader(srcpath)
-		if err != nil {
-			return err
-		}
-		defer readCloser.Close()
-	*/
+	defer readCloser.Close()
 
 	// 解压路径
 	destpath = GetPath(destpath)
