@@ -317,10 +317,12 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 			continue
 		}
 
-		//  设置解压密码
-		if file.IsEncrypted() {
-			file.SetPassword(password)
-		}
+		/*
+			//  设置解压密码
+			if file.IsEncrypted() {
+				file.SetPassword(password)
+			}
+		*/
 
 		// 打开原文件
 		fmt.Printf("file.Open: %s\n", file.Name)
