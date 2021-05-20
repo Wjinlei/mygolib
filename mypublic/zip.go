@@ -284,30 +284,29 @@ func ZIP(srcpath, dstpath, encoding string) error {
 
 // ZIPDecrypt 解压缩
 func ZIPDecrypt(srcpath, destpath, password, charset string) error {
+	// 编码器
 	encoder := myencode.GetEncoder(charset)
 	if encoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
+	// 解码器
 	decoder := myencode.GetDecoder(charset)
 	if decoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
 	password = encoder.ConvertString(password)
 
+	// 读取源文件
 	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {
 		return err
 	}
 	defer readCloser.Close()
 
+	// 解压路径
 	destpath = GetPath(destpath)
 
 	for _, file := range readCloser.File {
-		//  设置解压密码
-		if file.IsEncrypted() {
-			file.SetPassword(password)
-		}
-
 		// 创建目录
 		filepath := fmt.Sprintf("%s/%s",
 			destpath, decoder.ConvertString(file.Name))
@@ -316,6 +315,11 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 				return err
 			}
 			continue
+		}
+
+		//  设置解压密码
+		if file.IsEncrypted() {
+			file.SetPassword(password)
 		}
 
 		// 打开原文件
