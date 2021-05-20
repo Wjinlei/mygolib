@@ -299,6 +299,7 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	// 读取源文件
 	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {
+		fmt.Println("readCloser err:", err)
 		return err
 	}
 	defer readCloser.Close()
@@ -306,50 +307,48 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	// 解压路径
 	destpath = GetPath(destpath)
 
-	/*
-		for _, file := range readCloser.File {
-			// 创建目录
-			filepath := fmt.Sprintf("%s/%s",
-				destpath, decoder.ConvertString(file.Name))
-			if file.FileInfo().IsDir() {
-				if err := MakeDir(filepath); err != nil {
-					return err
-				}
-				continue
-			}
-
-			//  设置解压密码
-			if file.IsEncrypted() {
-				file.SetPassword(password)
-			}
-
-			// 打开原文件
-			fmt.Printf("file.Open: %s\n", file.Name)
-			src, err := file.Open()
-			if err != nil {
+	for _, file := range readCloser.File {
+		// 创建目录
+		filepath := fmt.Sprintf("%s/%s",
+			destpath, decoder.ConvertString(file.Name))
+		if file.FileInfo().IsDir() {
+			if err := MakeDir(filepath); err != nil {
 				return err
 			}
+			continue
+		}
 
-			// 创建目标文件
-			fmt.Printf("os.Create: %s\n", filepath)
-			dst, err := os.Create(filepath)
-			if err != nil {
-				src.Close()
-				return err
-			}
+		//  设置解压密码
+		if file.IsEncrypted() {
+			file.SetPassword(password)
+		}
 
-			// 写入数据
-			fmt.Printf("io.Copy: %s, %s\n", dst.Name(), file.Name)
-			_, err = io.Copy(dst, src)
-			if err != nil {
-				src.Close()
-				dst.Close()
-				return err
-			}
+		// 打开原文件
+		fmt.Printf("file.Open: %s\n", file.Name)
+		src, err := file.Open()
+		if err != nil {
+			return err
+		}
+
+		// 创建目标文件
+		fmt.Printf("os.Create: %s\n", filepath)
+		dst, err := os.Create(filepath)
+		if err != nil {
+			src.Close()
+			return err
+		}
+
+		// 写入数据
+		fmt.Printf("io.Copy: %s, %s\n", dst.Name(), file.Name)
+		_, err = io.Copy(dst, src)
+		if err != nil {
 			src.Close()
 			dst.Close()
+			return err
 		}
-	*/
+		src.Close()
+		dst.Close()
+	}
 	return nil
 }
 
