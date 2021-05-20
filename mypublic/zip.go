@@ -284,8 +284,6 @@ func ZIP(srcpath, dstpath, encoding string) error {
 
 // ZIPDecrypt 解压缩
 func ZIPDecrypt(srcpath, destpath, password, charset string) error {
-	var errs []string
-
 	encoder := myencode.GetEncoder(charset)
 	if encoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
@@ -295,10 +293,6 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
 	password = encoder.ConvertString(password)
-
-	if r := recover(); r != nil {
-		errs = append(errs, r.(error).Error())
-	}
 
 	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {
@@ -321,23 +315,19 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 			filepath := fmt.Sprintf("%s/%s",
 				destpath, decoder.ConvertString(file.Name))
 			if file.FileInfo().IsDir() {
-				if err := MakeDir(filepath); err != nil {
-					errs = append(errs, err.Error())
-				}
+				MakeDir(filepath)
 				continue
 			}
 
 			// 打开原文件
 			src, err := file.Open()
 			if err != nil {
-				errs = append(errs, err.Error())
 				continue
 			}
 
 			// 创建目标文件
 			dst, err := os.Create(filepath)
 			if err != nil {
-				errs = append(errs, err.Error())
 				src.Close()
 				continue
 			}
@@ -345,7 +335,6 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 			// 写入数据
 			_, err = io.Copy(dst, src)
 			if err != nil {
-				errs = append(errs, err.Error())
 				src.Close()
 				dst.Close()
 				continue
@@ -355,9 +344,6 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		}
 	}()
 	wg.Wait()
-	if len(errs) > 0 {
-		return fmt.Errorf(strings.Join(errs, "\n"))
-	}
 	return nil
 }
 
