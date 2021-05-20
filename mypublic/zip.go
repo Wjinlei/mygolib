@@ -302,48 +302,45 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 
 	destpath = GetPath(destpath)
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for _, file := range readCloser.File {
-			//  设置解压密码
-			if file.IsEncrypted() {
-				file.SetPassword(password)
-			}
+	for _, file := range readCloser.File {
+		//  设置解压密码
+		if file.IsEncrypted() {
+			file.SetPassword(password)
+		}
 
-			// 创建目录
-			filepath := fmt.Sprintf("%s/%s",
-				destpath, decoder.ConvertString(file.Name))
-			if file.FileInfo().IsDir() {
-				MakeDir(filepath)
-				continue
+		// 创建目录
+		filepath := fmt.Sprintf("%s/%s",
+			destpath, decoder.ConvertString(file.Name))
+		if file.FileInfo().IsDir() {
+			if err := MakeDir(filepath); err != nil {
+				return err
 			}
+			continue
+		}
 
-			// 打开原文件
-			src, err := file.Open()
-			if err != nil {
-				continue
-			}
+		// 打开原文件
+		src, err := file.Open()
+		if err != nil {
+			return err
+		}
 
-			// 创建目标文件
-			dst, err := os.Create(filepath)
-			if err != nil {
-				src.Close()
-				continue
-			}
+		// 创建目标文件
+		dst, err := os.Create(filepath)
+		if err != nil {
+			src.Close()
+			return err
+		}
 
-			// 写入数据
-			_, err = io.Copy(dst, src)
-			if err != nil {
-				src.Close()
-				dst.Close()
-				continue
-			}
+		// 写入数据
+		_, err = io.Copy(dst, src)
+		if err != nil {
 			src.Close()
 			dst.Close()
+			return err
 		}
-	}()
-	wg.Wait()
+		src.Close()
+		dst.Close()
+	}
 	return nil
 }
 
