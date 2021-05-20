@@ -298,11 +298,24 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 
 	// 读取源文件
 	fmt.Println("OpenReader")
-	readCloser, err := zip.OpenReader(srcpath)
+	f, err := os.Open(srcpath)
 	if err != nil {
 		return err
 	}
-	defer readCloser.Close()
+	fi, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return err
+	}
+	readCloser, err := zip.NewReader(f, fi.Size())
+
+	/*
+		readCloser, err := zip.OpenReader(srcpath)
+		if err != nil {
+			return err
+		}
+		defer readCloser.Close()
+	*/
 
 	// 解压路径
 	destpath = GetPath(destpath)
