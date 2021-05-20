@@ -285,6 +285,7 @@ func ZIP(srcpath, dstpath, encoding string) error {
 // ZIPDecrypt 解压缩
 func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	var errs []string
+
 	encoder := myencode.GetEncoder(charset)
 	if encoder == nil {
 		return fmt.Errorf("Charset error: [%s]", charset)
@@ -294,6 +295,10 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		return fmt.Errorf("Charset error: [%s]", charset)
 	}
 	password = encoder.ConvertString(password)
+
+	if r := recover(); r != nil {
+		errs = append(errs, r.(error).Error())
+	}
 
 	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {
