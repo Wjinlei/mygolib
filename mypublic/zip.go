@@ -2,7 +2,6 @@ package mypublic
 
 import (
 	"archive/tar"
-	"archive/zip"
 	"compress/gzip"
 	"errors"
 	"fmt"
@@ -13,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/Wjinlei/mygolib/myencode"
+	"github.com/yeka/zip"
 )
 
 var wg sync.WaitGroup
@@ -296,6 +296,12 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 	}
 	password = encoder.ConvertString(password)
 
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("你的内存不足")
+		}
+	}()
+
 	// 读取源文件
 	readCloser, err := zip.OpenReader(srcpath)
 	if err != nil {
@@ -317,12 +323,10 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 			continue
 		}
 
-		/*
-			//  设置解压密码
-			if file.IsEncrypted() {
-				file.SetPassword(password)
-			}
-		*/
+		//  设置解压密码
+		if file.IsEncrypted() {
+			file.SetPassword(password)
+		}
 
 		// 打开原文件
 		fmt.Printf("file.Open: %s\n", file.Name)
