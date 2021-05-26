@@ -134,6 +134,7 @@ func Escape(s string) string {
 	s = strings.ReplaceAll(s, "}", "\\}")
 	s = strings.ReplaceAll(s, "[", "\\[")
 	s = strings.ReplaceAll(s, "]", "\\]")
+	s = strings.ReplaceAll(s, "/", "\\/")
 	//s = strings.ReplaceAll(s, "\\A", "\\\\A")
 	s = strings.ReplaceAll(s, "\b", "\\b")
 	//s = strings.ReplaceAll(s, "\\B", "\\\\B")
