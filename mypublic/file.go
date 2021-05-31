@@ -48,6 +48,17 @@ func WriteFile(filepath string, content string) error {
 	return nil
 }
 
+// AppendFile 向文件追加内容
+func AppendFile(filepath string, content string) error {
+	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	file.WriteString(content)
+	return nil
+}
+
 // MakeDir 创建目录
 func MakeDir(dirpath string) error {
 	if !Exists(dirpath) {
