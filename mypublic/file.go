@@ -48,7 +48,7 @@ func WriteFile(filepath string, content string) error {
 	return nil
 }
 
-// AppendFile 向文件追加内容
+// AppendFile 向文件追加内容,Append模式
 func AppendFile(filepath string, content string) error {
 	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
