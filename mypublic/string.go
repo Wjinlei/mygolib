@@ -64,7 +64,7 @@ func Int64ToKBMBGB(value int64) string {
 }
 
 // Uint64ToKBMBGB 将uint64类型表示的字节转换为带上单位的String
-func Uint64ToKBMBGB(value int64) string {
+func Uint64ToKBMBGB(value uint64) string {
 	var retStr string
 	if value > 1024*1024*1024*1024 {
 		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)/float64(1024)/float64(1024)/float64(1024)) + " TB"
