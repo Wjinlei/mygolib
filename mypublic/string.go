@@ -49,29 +49,33 @@ func TrimQuotes(s string) string {
 // Int64ToKBMBGB 将int64类型表示的字节转换为带上单位的String
 func Int64ToKBMBGB(value int64) string {
 	var retStr string
-	if value > 1073741824 {
-		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)/float64(1024)) + "(GB)"
-	} else if value > 1048576 {
-		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)) + "(MB)"
+	if value > 1024*1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)/float64(1024)/float64(1024)/float64(1024)) + " TB"
+	} else if value > 1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)/float64(1024)/float64(1024)) + " GB"
+	} else if value > 1024*1024 {
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)/float64(1024)) + " MB"
 	} else if value > 1024 {
-		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)) + "(KB)"
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)) + " KB"
 	} else {
-		retStr = fmt.Sprintf("%.2f", float64(value)) + "(B)"
+		retStr = fmt.Sprintf("%.1f", float64(value)) + " B"
 	}
 	return retStr
 }
 
 // Uint64ToKBMBGB 将uint64类型表示的字节转换为带上单位的String
-func Uint64ToKBMBGB(value uint64) string {
+func Uint64ToKBMBGB(value int64) string {
 	var retStr string
-	if value > 1073741824 {
-		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)/float64(1024)) + "(GB)"
-	} else if value > 1048576 {
-		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)/float64(1024)) + "(MB)"
+	if value > 1024*1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)/float64(1024)/float64(1024)/float64(1024)) + " TB"
+	} else if value > 1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)/float64(1024)/float64(1024)) + " GB"
+	} else if value > 1024*1024 {
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)/float64(1024)) + " MB"
 	} else if value > 1024 {
-		retStr = fmt.Sprintf("%.2f", float64(value)/float64(1024)) + "(KB)"
+		retStr = fmt.Sprintf("%.1f", float64(value)/float64(1024)) + " KB"
 	} else {
-		retStr = fmt.Sprintf("%.2f", float64(value)) + "(B)"
+		retStr = fmt.Sprintf("%.1f", float64(value)) + " B"
 	}
 	return retStr
 }
@@ -79,12 +83,14 @@ func Uint64ToKBMBGB(value uint64) string {
 // Float64ToKBMBGB 将float64类型表示的字节转换为带上单位的String
 func Float64ToKBMBGB(value float64) string {
 	var retStr string
-	if value > 1073741824 {
-		retStr = fmt.Sprintf("%.2f", value) + "(GB)"
-	} else if value > 1048576 {
-		retStr = fmt.Sprintf("%.2f", value) + "(MB)"
+	if value > 1024*1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", value) + " TB"
+	} else if value > 1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", value) + " GB"
+	} else if value > 1024*1024 {
+		retStr = fmt.Sprintf("%.1f", value) + " MB"
 	} else {
-		retStr = fmt.Sprintf("%.2f", value) + "(KB)"
+		retStr = fmt.Sprintf("%.1f", value) + " KB"
 	}
 	return retStr
 }
