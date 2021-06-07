@@ -323,14 +323,12 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		}
 
 		// 打开原文件
-		fmt.Printf("file.Open: %s\n", file.Name)
 		src, err := file.Open()
 		if err != nil {
 			return err
 		}
 
 		// 创建目标文件
-		fmt.Printf("os.Create: %s\n", filepath)
 		dst, err := os.Create(filepath)
 		if err != nil {
 			src.Close()
@@ -338,7 +336,6 @@ func ZIPDecrypt(srcpath, destpath, password, charset string) error {
 		}
 
 		// 写入数据
-		fmt.Printf("io.Copy: %s, %s\n", dst.Name(), file.Name)
 		_, err = io.Copy(dst, src)
 		if err != nil {
 			src.Close()
