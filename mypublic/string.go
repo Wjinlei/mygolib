@@ -97,6 +97,22 @@ func Float64ToKBMBGB(value float64) string {
 	return retStr
 }
 
+func FormatSpeedByFloat64(value float64) string {
+	var retStr string
+	if value > 1024*1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", value) + " TB/s"
+	} else if value > 1024*1024*1024 {
+		retStr = fmt.Sprintf("%.1f", value) + " GB/s"
+	} else if value > 1024*1024 {
+		retStr = fmt.Sprintf("%.1f", value) + " MB/s"
+	} else if value > 1024 {
+		retStr = fmt.Sprintf("%.1f", value) + " KB/s"
+	} else {
+		retStr = fmt.Sprintf("%.1f", value) + " B/s"
+	}
+	return retStr
+}
+
 // CreateRandomString 生成随机字符串
 func CreateRandomString(len int) string {
 	var container string
