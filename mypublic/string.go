@@ -89,8 +89,10 @@ func Float64ToKBMBGB(value float64) string {
 		retStr = fmt.Sprintf("%.1f", value) + " GB"
 	} else if value > 1024*1024 {
 		retStr = fmt.Sprintf("%.1f", value) + " MB"
-	} else {
+	} else if value > 1024 {
 		retStr = fmt.Sprintf("%.1f", value) + " KB"
+	} else {
+		retStr = fmt.Sprintf("%.1f", value) + " B"
 	}
 	return retStr
 }
