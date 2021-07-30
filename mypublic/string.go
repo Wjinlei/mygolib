@@ -80,39 +80,6 @@ func Uint64ToKBMBGB(value uint64) string {
 	return retStr
 }
 
-// Float64ToKBMBGB 将float64类型表示的字节转换为带上单位的String
-func Float64ToKBMBGB(value float64) string {
-	var retStr string
-	if value > 1024*1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024/1024) + " TB"
-	} else if value > 1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024) + " GB"
-	} else if value > 1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024/1024) + " MB"
-	} else if value > 1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024) + " KB"
-	} else {
-		retStr = fmt.Sprintf("%.1f", value) + " B"
-	}
-	return retStr
-}
-
-func FormatSpeedByFloat64(value float64) string {
-	var retStr string
-	if value > 1024*1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024/1024) + " TB/s"
-	} else if value > 1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024) + " GB/s"
-	} else if value > 1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024/1024) + " MB/s"
-	} else if value > 1024 {
-		retStr = fmt.Sprintf("%.1f", value/1024) + " KB/s"
-	} else {
-		retStr = fmt.Sprintf("%.1f", value) + " B/s"
-	}
-	return retStr
-}
-
 // CreateRandomString 生成随机字符串
 func CreateRandomString(len int) string {
 	var container string
