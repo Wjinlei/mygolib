@@ -84,13 +84,13 @@ func Uint64ToKBMBGB(value uint64) string {
 func Float64ToKBMBGB(value float64) string {
 	var retStr string
 	if value > 1024*1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " TB"
+		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024/1024) + " TB"
 	} else if value > 1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " GB"
+		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024) + " GB"
 	} else if value > 1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " MB"
+		retStr = fmt.Sprintf("%.1f", value/1024/1024) + " MB"
 	} else if value > 1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " KB"
+		retStr = fmt.Sprintf("%.1f", value/1024) + " KB"
 	} else {
 		retStr = fmt.Sprintf("%.1f", value) + " B"
 	}
@@ -100,13 +100,13 @@ func Float64ToKBMBGB(value float64) string {
 func FormatSpeedByFloat64(value float64) string {
 	var retStr string
 	if value > 1024*1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " TB/s"
+		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024/1024) + " TB/s"
 	} else if value > 1024*1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " GB/s"
+		retStr = fmt.Sprintf("%.1f", value/1024/1024/1024) + " GB/s"
 	} else if value > 1024*1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " MB/s"
+		retStr = fmt.Sprintf("%.1f", value/1024/1024) + " MB/s"
 	} else if value > 1024 {
-		retStr = fmt.Sprintf("%.1f", value) + " KB/s"
+		retStr = fmt.Sprintf("%.1f", value/1024) + " KB/s"
 	} else {
 		retStr = fmt.Sprintf("%.1f", value) + " B/s"
 	}
