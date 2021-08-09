@@ -18,6 +18,24 @@ func Loadfile(filepath string) (*Obj, error) {
 	return &Obj{File: f, Path: filepath}, nil
 }
 
+// 获取Section
+func (o Obj) GetSection(section string) (*Section, error) {
+	sec, err := o.File.GetSection(section)
+	if err != nil {
+		return nil, err
+	}
+	return sec, nil
+}
+
+// 删除Section
+func (o Obj) DelSection(section string) error {
+	o.File.DeleteSection(section)
+	if err := o.save(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // 在指定Section下,新增一个key
 func (o Obj) AddKey(section, keyname, keyval string) error {
 	_, err := o.File.Section(section).NewKey(keyname, keyval)
