@@ -19,7 +19,7 @@ func Loadfile(filepath string) (*Obj, error) {
 }
 
 // 获取Section
-func (o Obj) GetSection(section string) (*Section, error) {
+func (o Obj) GetSection(section string) (*ini.Section, error) {
 	sec, err := o.File.GetSection(section)
 	if err != nil {
 		return nil, err
